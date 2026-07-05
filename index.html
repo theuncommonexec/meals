@@ -66,9 +66,10 @@
   .panel.like{border-top:4px solid var(--like-bd);}
   .panel.no{border-top:4px solid var(--no-bd);}
   .panel h3{margin:0 0 12px; font-size:15px;}
-  .tag{display:inline-flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--line); border-radius:18px; padding:6px 12px; margin:0 6px 8px 0; font-size:12.5px; font-weight:600;}
-  .tag.like{background:var(--like); border-color:var(--like-bd); color:var(--like-tx);}
-  .tag.no{background:var(--no); border-color:var(--no-bd); color:var(--no-tx);}
+  .tag{display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px; padding:9px 16px; margin:0 7px 9px 0; font-size:13px; font-weight:600; color:#fff;}
+  .tag .tik{font-size:12px; opacity:.9;}
+  .tag.like{background:var(--like-bd);}
+  .tag.no{background:var(--no-bd);}
   .empty{color:var(--muted); font-size:12.5px; font-style:italic;}
   .rules{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-top:16px;}
   .rules h3{margin:0 0 8px; font-size:15px;}
@@ -141,6 +142,14 @@
   .fbrow{display:flex; gap:8px; justify-content:flex-end;}
   .fbrow .fbtn{padding:10px 16px;}
   .wklink{font-size:12.5px; font-weight:700; color:var(--del-tx); text-decoration:none; float:right; margin-top:3px;}
+  .vui{display:none; flex-direction:column; align-items:center; gap:10px; padding:20px 0 10px;}
+  .vui.on{display:flex;}
+  .vmic{position:relative; width:76px; height:76px; border-radius:50%; background:var(--ink); color:#fff; font-size:32px; display:flex; align-items:center; justify-content:center; cursor:pointer;}
+  .vmic .ring{position:absolute; inset:0; border-radius:50%; background:var(--ink); opacity:.22; animation:vripple 1.8s ease-out infinite; pointer-events:none;}
+  .vmic .ring.r2{animation-delay:.9s;}
+  @keyframes vripple{0%{transform:scale(1); opacity:.28;} 100%{transform:scale(2.2); opacity:0;}}
+  .vlabel{font-size:13px; color:var(--muted); font-weight:600;}
+  .vwords{font-size:14.5px; color:var(--ink); min-height:22px; text-align:center; font-style:italic; max-width:90%;}
   .fbtn{border:1px solid var(--line); background:var(--card); border-radius:12px; padding:0 14px; font-size:17px; cursor:pointer;}
   .fbtn.send{background:var(--ink); color:#fff; border-color:var(--ink); font-size:14px; font-weight:700;}
   .fbtn.rec{background:var(--no); border-color:var(--no-bd); animation:pulse 1.2s infinite;}
@@ -223,6 +232,11 @@
       <button id="fbMic" class="fbtn" title="Speak">🎤</button>
       <button id="fbSend" class="fbtn send">Send</button>
     </div>
+  </div>
+  <div class="vui" id="vui">
+    <div class="vmic" id="vmicBig"><span class="ring"></span><span class="ring r2"></span>🎤</div>
+    <div class="vlabel">Listening… tap the mic to stop</div>
+    <div class="vwords" id="vwords"></div>
   </div>
   <p class="savednote" id="fbStatus"></p>
 
@@ -350,10 +364,10 @@ function renderBoards(){
   const love = ALL.filter(isLoved).map(d=>d.n);
   const avoid = ALL.filter(isAvoid).map(d=>d.n);
   document.getElementById('loveTags').innerHTML =
-    love.length ? love.map(n=>'<span class="tag like">'+n+'</span>').join('') : '<span class="empty">Nothing qualifies yet.</span>';
+    love.length ? love.map(n=>'<span class="tag like">'+n+'<span class="tik">✓</span></span>').join('') : '<span class="empty">Nothing qualifies yet.</span>';
   document.getElementById('avoidTags').innerHTML =
-    avoid.map(n=>'<span class="tag no">'+n+'</span>').join('') +
-    STATIC_NO.map(n=>'<span class="tag no">'+n+'</span>').join('');
+    avoid.map(n=>'<span class="tag no">'+n+'<span class="tik">✕</span></span>').join('') +
+    STATIC_NO.map(n=>'<span class="tag no">'+n+'<span class="tik">✕</span></span>').join('');
 }
 const logRoot=document.getElementById('log');
 function fillTo(wrap,v){ wrap.querySelectorAll('.st').forEach(c=>c.classList.toggle('on', (+c.dataset.v)<=v)); }
@@ -435,14 +449,24 @@ async function sendFeedback(){
 }
 fbSend.onclick=sendFeedback;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const micBtn=document.getElementById('fbMic');
+const micBtn=document.getElementById('fbMic'), vui=document.getElementById('vui'),
+      vmicBig=document.getElementById('vmicBig'), vwords=document.getElementById('vwords');
 if(SR){
-  const rec=new SR(); rec.interimResults=false; let listening=false;
-  micBtn.onclick=()=>{ if(listening){ rec.stop(); return; } try{ rec.start(); }catch(_){} };
-  rec.onstart=()=>{ listening=true; micBtn.classList.add('rec'); };
-  rec.onend=()=>{ listening=false; micBtn.classList.remove('rec'); };
-  rec.onerror=()=>{ listening=false; micBtn.classList.remove('rec'); };
-  rec.onresult=ev=>{ fbText.value=(fbText.value+' '+ev.results[0][0].transcript).trim(); };
+  const rec=new SR(); rec.interimResults=true; rec.continuous=true;
+  let listening=false, base='';
+  micBtn.onclick=()=>{ if(listening){ try{rec.stop();}catch(_){} return; }
+    base=fbText.value?fbText.value.trim()+' ':''; try{rec.start();}catch(_){} };
+  vmicBig.onclick=()=>{ try{rec.stop();}catch(_){} };
+  rec.onstart=()=>{ listening=true; vui.classList.add('on'); micBtn.classList.add('rec'); vwords.textContent=''; };
+  rec.onend=()=>{ listening=false; vui.classList.remove('on'); micBtn.classList.remove('rec'); };
+  rec.onerror=()=>{ listening=false; vui.classList.remove('on'); micBtn.classList.remove('rec'); };
+  rec.onresult=ev=>{
+    let fin='', inter='';
+    for(let i=0;i<ev.results.length;i++){ const t=ev.results[i][0].transcript;
+      if(ev.results[i].isFinal) fin+=t; else inter+=t; }
+    vwords.textContent=(inter||fin).trim();
+    fbText.value=(base+fin+(inter?' '+inter:'')).replace(/\s+/g,' ').trim();
+  };
 } else { micBtn.style.display='none'; }
 
 /* ---------- LIVE UPDATES ---------- */
