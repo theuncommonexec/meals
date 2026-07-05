@@ -150,6 +150,10 @@
   @keyframes vripple{0%{transform:scale(1); opacity:.28;} 100%{transform:scale(2.2); opacity:0;}}
   .vlabel{font-size:13px; color:var(--muted); font-weight:600;}
   .vwords{font-size:14.5px; color:var(--ink); min-height:22px; text-align:center; font-style:italic; max-width:90%;}
+  .mi{width:20px; height:20px; display:block;}
+  .vmic .mi{width:34px; height:34px;}
+  .tgrp{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700; margin:12px 0 7px;}
+  .tgrp:first-child{margin-top:0;}
   .fbtn{border:1px solid var(--line); background:var(--card); border-radius:12px; padding:0 14px; font-size:17px; cursor:pointer;}
   .fbtn.send{background:var(--ink); color:#fff; border-color:var(--ink); font-size:14px; font-weight:700;}
   .fbtn.rec{background:var(--no); border-color:var(--no-bd); animation:pulse 1.2s infinite;}
@@ -158,8 +162,7 @@
 </head>
 <body>
 <header>
-  <h1>🍽️ Deane Family Meals</h1>
-  <p class="sub">Batch Cooking Wizard</p>
+  <h1>🍽️ Deane Family Meals: Batch Cooking Wizard</h1>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
@@ -172,13 +175,6 @@
 <main>
 
 <section id="menu">
-  <div class="legend">
-    <span class="chip"><span class="sw" style="background:var(--cook);border-color:var(--home-bd);"></span>Cook day</span>
-    <span class="chip"><span class="sw" style="background:var(--home);border-color:var(--home-bd);"></span>Home</span>
-    <span class="chip"><span class="sw" style="background:var(--out);border-color:var(--out-bd);"></span>Eat out</span>
-    <span class="chip"><span class="sw" style="background:var(--del);border-color:var(--del-bd);"></span>Delivery</span>
-    <span class="chip"><span class="sw" style="background:var(--amb);border-color:var(--line);"></span>Out &amp; about</span>
-  </div>
   <div id="menuTables"></div>
   <div class="foot">
     <p><b>🍳 Cook at home:</b> Chinese · Latin · Italian · Japanese · Korean · Taco Tuesday · home burgers — 2 fish per cook day.</p>
@@ -204,13 +200,19 @@
   <p class="rules-line"><b>Tap the stars to rate.</b> 5★ = Love it! Make more often · 1★ = Not a fan, pass for next time.</p>
   <p class="savednote" id="savedNote"></p>
 
-  <h3 class="grouphd latest">⭐ Latest batch — Thursday, Jul 2 (Italian) · rate these first</h3>
+  <h3 class="grouphd latest">Batch Date: Thu Jul 2 — Latest</h3>
   <table class="log">
     <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
     <tbody id="logLatest"></tbody>
   </table>
 
-  <h3 class="grouphd">Prior dishes</h3>
+  <h3 class="grouphd latest">Batch Date: Mon Jun 29</h3>
+  <table class="log">
+    <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
+    <tbody id="logJun29"></tbody>
+  </table>
+
+  <h3 class="grouphd latest">Batch Date: Other</h3>
   <table class="log">
     <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
     <tbody id="logPrior"></tbody>
@@ -229,12 +231,12 @@
   <div class="fbox fcol">
     <textarea id="fbText" maxlength="600" rows="3" placeholder="e.g. Swap the salmon for cod. No shrimp this week…"></textarea>
     <div class="fbrow">
-      <button id="fbMic" class="fbtn" title="Speak">🎤</button>
-      <button id="fbSend" class="fbtn send">Send</button>
+      <button id="fbMic" class="fbtn" title="Speak"><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg></button>
+      <button id="fbSend" class="fbtn send">Update</button>
     </div>
   </div>
   <div class="vui" id="vui">
-    <div class="vmic" id="vmicBig"><span class="ring"></span><span class="ring r2"></span>🎤</div>
+    <div class="vmic" id="vmicBig"><span class="ring"></span><span class="ring r2"></span><svg class="mi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg></div>
     <div class="vlabel">Listening… tap the mic to stop</div>
     <div class="vwords" id="vwords"></div>
   </div>
@@ -255,10 +257,9 @@
 </section>
 
 <section id="shop">
-  <h2>🛒 Shopping list <span class="wk">· Monday shop — week of Jul 6</span></h2>
+  <h2>🛒 Grocery List: Mon July 6th, 2026</h2>
   <p class="savednote" id="shopNote"></p>
   <div id="shopLists"><p class="empty">Loading…</p></div>
-  <p class="shopnote">Probably have — check: olive oil, coarse salt, cumin, dried oregano, dried chili flakes, red wine vinegar, cocoa powder, baking soda.<br>Thursday's list coming later this week.</p>
 </section>
 </main>
 
@@ -274,14 +275,16 @@ const LATEST = [
   {n:"Egg muffin with spinach & zucchini", c:"Breakfast"},
   {n:"Banana, cinnamon & honey overnight oats", c:"Breakfast"},
 ];
-const DISHES = [
+const BATCH0629 = [
   {n:"Ginger-scallion steamed salmon", c:"Chinese"},
   {n:"Teriyaki chicken", c:"Chinese/JP"},
   {n:"Egg quiche w/ zucchini & mushroom", c:"Breakfast", loved:true},
   {n:"Mango & blueberry chia pudding (+ oats)", c:"Breakfast", loved:true},
-  {n:"Baked purple yam", c:"Side", loved:true},
   {n:"Broccolini + bok choy + mushroom stir-fry", c:"Chinese"},
   {n:"Cantonese black-bean beef stir-fry", c:"Chinese"},
+];
+const DISHES = [
+  {n:"Baked purple yam", c:"Side", loved:true},
   {n:"Pasta alla puttanesca", c:"Italian", loved:true},
   {n:"Spaghetti, thin liquid tomato sauce", c:"Italian", loved:true},
   {n:"Pasta with tuna & basil pesto", c:"Italian", loved:true},
@@ -294,7 +297,7 @@ const DISHES = [
   {n:"Banana bread, almonds & cocoa", c:"Breakfast", loved:true},
 ];
 const STATIC_NO = ["Cold soups / gazpacho","Peanut butter sauce","Hummus-thick gloppy sauces","Vegan / substitute eggs","Oats with apple","Papaya","Beets (Tom)","Oranges / citrus (Yue)","Too much mint","Strong spirulina"];
-const ALL = LATEST.concat(DISHES);
+const ALL = LATEST.concat(BATCH0629, DISHES);
 
 /* ---------- SHARED DATABASE ---------- */
 const SB_URL = "https://foukqpevshhnnqhfordy.supabase.co";
@@ -358,16 +361,23 @@ function rowHtml(d){
 }
 function renderLog(){
   document.getElementById('logLatest').innerHTML = LATEST.map(rowHtml).join('');
+  document.getElementById('logJun29').innerHTML = BATCH0629.map(rowHtml).join('');
   document.getElementById('logPrior').innerHTML = DISHES.map(rowHtml).join('');
 }
 function renderBoards(){
-  const love = ALL.filter(isLoved).map(d=>d.n);
-  const avoid = ALL.filter(isAvoid).map(d=>d.n);
+  const groupOf=d=> d.c==="Breakfast"?"Breakfast": d.c==="Soup"?"Soups": d.c==="Side"?"Sides":"Mains";
+  const ORDER=["Mains","Soups","Sides","Breakfast"];
+  const grpHtml=(list,cls,icon)=>ORDER.map(g=>{
+    const items=list.filter(d=>groupOf(d)===g);
+    if(!items.length) return '';
+    return '<div class="tgrp">'+g+'</div><div>'+items.map(d=>'<span class="tag '+cls+'">'+d.n+'<span class="tik">'+icon+'</span></span>').join('')+'</div>';
+  }).join('');
+  const love=ALL.filter(isLoved), avoid=ALL.filter(isAvoid);
   document.getElementById('loveTags').innerHTML =
-    love.length ? love.map(n=>'<span class="tag like">'+n+'<span class="tik">✓</span></span>').join('') : '<span class="empty">Nothing qualifies yet.</span>';
+    love.length ? grpHtml(love,'like','✓') : '<span class="empty">Nothing qualifies yet.</span>';
   document.getElementById('avoidTags').innerHTML =
-    avoid.map(n=>'<span class="tag no">'+n+'<span class="tik">✕</span></span>').join('') +
-    STATIC_NO.map(n=>'<span class="tag no">'+n+'<span class="tik">✕</span></span>').join('');
+    grpHtml(avoid,'no','✕') +
+    '<div class="tgrp">Ingredients &amp; rules</div><div>'+STATIC_NO.map(n=>'<span class="tag no">'+n+'<span class="tik">✕</span></span>').join('')+'</div>';
 }
 const logRoot=document.getElementById('log');
 function fillTo(wrap,v){ wrap.querySelectorAll('.st').forEach(c=>c.classList.toggle('on', (+c.dataset.v)<=v)); }
@@ -520,7 +530,9 @@ const WEEKS = [
          ["Sat","","amb|Out & about","del|🍣 Ametller sushi"],
          ["Sun","","del|🍝 Italian","home|🍱 Homemade: Japanese"]]}
 ];
-function cell(spec){ const [cls,txt,fish]=spec.split("|"); return '<td class="'+cls+'">'+txt+(fish?'<span class="fish">🐟 '+fish+'</span>':'')+'</td>'; }
+function cell(spec){ const [cls,txt,fish]=spec.split("|");
+  const pre = cls==="out" ? '<b>Eat out ·</b> ' : cls==="del" ? '<b>Delivery ·</b> ' : '';
+  return '<td class="'+cls+'">'+pre+txt+(fish?'<span class="fish">🐟 '+fish+'</span>':'')+'</td>'; }
 document.getElementById('menuTables').innerHTML = WEEKS.map(w=>{
   let rows=w.rows.map(r=>{
     const isMon=r[0]==="Mon", isThu=r[0]==="Thu", isSun=r[0]==="Sun";
