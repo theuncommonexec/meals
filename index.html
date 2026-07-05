@@ -31,6 +31,7 @@
   header{padding:16px 24px 0;}
   h1{font-size:clamp(16px,4.8vw,21px); margin:0 0 2px; white-space:nowrap;}
   .sub{color:var(--muted); font-size:13px; margin:0;}
+  .gdate{font-weight:600; color:var(--acc); margin-top:2px;}
   nav{background:var(--bg); display:flex; overflow-x:auto; padding:6px 12px 0; border-bottom:1px solid var(--line); -webkit-overflow-scrolling:touch; scrollbar-width:none; position:sticky; top:0; z-index:20;}
   nav::-webkit-scrollbar{display:none;}
   .tab{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 13px 9px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; text-align:center; white-space:nowrap; border-bottom:3px solid transparent;}
@@ -182,6 +183,7 @@
 <body>
 <header>
   <h1>🍽️ Deane Family Meals Wizard</h1>
+  <p class="sub gdate">Week of July 6th</p>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
@@ -217,7 +219,7 @@
 
   <h3 class="grouphd latest" style="margin-top:28px;">📋 All Meal Rules We Track</h3>
 
-  <details class="dd"><summary><b>Weekly rhythm</b> — cook days, takeout &amp; standing slots</summary><div class="ddbody">
+  <details class="dd" open><summary><b>Weekly rhythm</b> — cook days, takeout &amp; standing slots</summary><div class="ddbody">
     • Batch cook + grocery shop twice a week: <b>Monday</b> and <b>Thursday</b> (Monday batch covers early week, Thursday the late week).<br>
     • <b>Monday lunch = Ametller sushi takeout, every week</b> — sushi never appears elsewhere.<br>
     • Wednesday: Honest Greens delivery — one order covers lunch AND dinner.<br>
@@ -227,7 +229,7 @@
     • Sunday: pancake breakfast · order-in lunch · leftovers dinner (no fresh cooking).
   </div></details>
 
-  <details class="dd"><summary><b>Batch template</b> — what every cook day includes</summary><div class="ddbody">
+  <details class="dd" open><summary><b>Batch template</b> — what every cook day includes</summary><div class="ddbody">
     • 2 meat dishes (≥1 chicken — thighs, or cooked into the dish; no plain grilled breast).<br>
     • Fish for Tom: 2 types per cook day from mackerel / salmon / sardines (salmon preferred; tuna max twice a month).<br>
     • 1 tofu/vegan dish (may be spicy, always savory).<br>
@@ -236,7 +238,7 @@
     • Every dish ≤30 minutes active cooking — no long braises.
   </div></details>
 
-  <details class="dd"><summary><b>Cuisine rules</b> — what we cook vs. order</summary><div class="ddbody">
+  <details class="dd" open><summary><b>Cuisine rules</b> — what we cook vs. order</summary><div class="ddbody">
     • Home-cooked: Chinese, Latin/Venezuelan, Italian, Japanese, Korean · 1–2 Latin dishes every week.<br>
     • Order/eat-out ONLY (never home-cooked): Indian, Vietnamese, Malaysian.<br>
     • 🌮 Taco Tuesday 2×/month (on Latin cook weeks) · 🍔 home burgers (never ordered) · 🍕 pizza night ≥1×/month — never two of these in the same week.<br>
@@ -244,7 +246,7 @@
     • Sunday's order-in cuisine ≠ Thursday's cooked cuisine.
   </div></details>
 
-  <details class="dd"><summary><b>Taste &amp; cooking rules</b> — hard-won corrections</summary><div class="ddbody">
+  <details class="dd" open><summary><b>Taste &amp; cooking rules</b> — hard-won corrections</summary><div class="ddbody">
     • Pasta sauce thin &amp; liquid ("drinkable"); pesto fine, never peanut-butter or gloppy hummus-thick sauces.<br>
     • Soups/creams HOT, never cold; max 1 per week; make ~50% extra.<br>
     • Sweeten with honey in moderation — no sugar, no artificial sweeteners; healthy flours (almond/coconut), white flour only for pizza/lasagna.<br>
@@ -254,20 +256,20 @@
     • Salmon worth the cost · smoked salmon for breakfast.
   </div></details>
 
-  <details class="dd"><summary><b>Breakfast rules</b></summary><div class="ddbody">
+  <details class="dd" open><summary><b>Breakfast rules</b></summary><div class="ddbody">
     • Batch-cooked on Mon &amp; Thu, heat-and-eat on weekdays (no morning cooking).<br>
     • ≥1 egg-based per week; mostly savory, max 1 sweet item weekly; omelette/scramble over boiled; make ~25% extra egg dishes.<br>
     • Kids' chia/oats: soft fruit only (berries, mango, kiwi) — no apple (turns oats sour), no hard fruit or nuts.<br>
     • Sunday = fresh pancakes, always.
   </div></details>
 
-  <details class="dd"><summary><b>Rating &amp; promotion rules</b></summary><div class="ddbody">
+  <details class="dd" open><summary><b>Rating &amp; promotion rules</b></summary><div class="ddbody">
     • Rate each dish every time it's made (Dishes Rating tab).<br>
     • <b>We love</b> = three 5★ ratings · <b>Avoid</b> = one 1★ (instant) or three 2★ · 3★/4★ are neutral.<br>
     • Explicit feedback ("love this, make often" / "never again") promotes immediately.
   </div></details>
 
-  <details class="dd"><summary><b>Grocery rules</b></summary><div class="ddbody">
+  <details class="dd" open><summary><b>Grocery rules</b></summary><div class="ddbody">
     • One big shop Monday morning; freeze Thursday's proteins; only split out what won't keep (e.g. fresh sardines).<br>
     • Portions: weekday lunches = 2 adults · dinners = 4 (kids ≈ ½ portions) · Friday dinner = kids only.<br>
     • Every item listed in English · Català · Español.
@@ -303,7 +305,7 @@
 </section>
 
 <section id="upcoming" class="show">
-  <h2 class="pagehd">Recipes: Week of Jul 6</h2>
+  <h2 class="pagehd">Recipes</h2>
 
   <h3 class="grouphd latest" style="margin-top:0;">✏️ Type or Record Updates</h3>
   <p class="rules-line" style="margin:0 0 8px;">Dishes will update automatically.</p>
@@ -336,7 +338,7 @@
 </section>
 
 <section id="shop">
-  <h2 class="pagehd">Grocery List: Mon Jul 6</h2>
+  <h2 class="pagehd">Grocery List</h2>
   <div id="shopLists"><p class="empty">Loading…</p></div>
 
   <div class="shopcat" style="margin-top:34px;">Anything else?</div>
