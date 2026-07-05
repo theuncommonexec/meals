@@ -69,10 +69,10 @@
   .panel.like{border-top:4px solid var(--like-bd);}
   .panel.no{border-top:4px solid var(--no-bd);}
   .panel h3{margin:0 0 12px; font-size:15px;}
-  .tag{display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px; padding:9px 16px; margin:0 7px 9px 0; font-size:13px; font-weight:600; color:#fff;}
-  .tag .tik{font-size:12px; opacity:.9;}
-  .tag.like{background:var(--like-bd);}
-  .tag.no{background:var(--no-bd);}
+  .tag{display:inline-flex; align-items:center; gap:8px; background:#fff; border-radius:999px; padding:8px 15px; margin:0 7px 9px 0; font-size:13px; font-weight:600;}
+  .tag .tik{font-size:12px; opacity:.85;}
+  .tag.like{color:var(--like-tx); border:1.5px solid var(--like-bd);}
+  .tag.no{color:var(--no-tx); border:1.5px solid var(--no-bd);}
   .empty{color:var(--muted); font-size:12.5px; font-style:italic;}
   .rules{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-top:16px;}
   .rules h3{margin:0 0 8px; font-size:15px;}
@@ -140,6 +140,8 @@
   .rbtn.big{font-size:17px; padding:13px 30px; margin:0 7px;}
   .fbox{display:flex; gap:8px; margin:2px 0 4px;}
   .fbox.fcol{flex-direction:column; align-items:stretch;}
+  .fbox input{flex:1; min-width:0; border:1px solid var(--line); border-radius:12px; padding:11px 14px; font-size:15px; background:var(--card); color:var(--ink);}
+  .fbox input:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
   .fbox textarea{border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; background:var(--card); color:var(--ink); font-family:inherit; resize:vertical; min-height:74px;}
   .fbox textarea:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
   .fbrow{display:flex; gap:8px; justify-content:flex-end;}
@@ -174,8 +176,8 @@
   <div class="tab active" data-t="upcoming"><span class="ti">🗓️</span>Upcoming Menu</div>
   <div class="tab" data-t="shop"><span class="ti">🛒</span>Grocery List</div>
   <div class="tab" data-t="menu"><span class="ti">📅</span>4-Week Overview</div>
-  <div class="tab" data-t="likes"><span class="ti">❤️</span>Likes &amp; Dislikes</div>
   <div class="tab" data-t="log"><span class="ti">⭐</span>Rate Past Dishes</div>
+  <div class="tab" data-t="likes"><span class="ti">❤️</span>Likes &amp; Dislikes</div>
 </nav>
 <main>
 
@@ -263,6 +265,12 @@
 
 <section id="shop">
   <h2>🛒 Grocery List: Mon July 6th, 2026</h2>
+
+  <div class="fbox">
+    <input id="giText" type="text" maxlength="120" placeholder="Add an item… e.g. dish soap, extra limes">
+    <button id="giAdd" class="fbtn send">Add</button>
+  </div>
+
   <p class="savednote" id="shopNote"></p>
   <div id="shopLists"><p class="empty">Loading…</p></div>
 </section>
@@ -483,6 +491,19 @@ if(SR){
     fbText.value=(base+fin+(inter?' '+inter:'')).replace(/\s+/g,' ').trim();
   };
 } else { micBtn.style.display='none'; }
+
+/* ---------- ADD GROCERY ITEM ---------- */
+const giText=document.getElementById('giText'), giAdd=document.getElementById('giAdd');
+async function addGrocery(){
+  const t=giText.value.trim(); if(!t) return;
+  giAdd.disabled=true;
+  const {error}=await sb.from('grocery_items').insert({week:WEEK, item:t, category:'Other items'});
+  giAdd.disabled=false;
+  if(error){ flash('⚠️ '+error.message); return; }
+  giText.value=''; flash('Added “'+t+'”'); fetchGroceries();
+}
+giAdd.onclick=addGrocery;
+giText.addEventListener('keydown',e=>{ if(e.key==='Enter') addGrocery(); });
 
 /* ---------- LIVE UPDATES ---------- */
 sb.channel('live')
