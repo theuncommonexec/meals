@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deane Meals</title>
+<title>Deane Family Meals: Batch Cooking Wizard</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#fbfcfd">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -28,9 +28,11 @@
   header{padding:16px 24px 0;}
   h1{font-size:21px; margin:0 0 2px;}
   .sub{color:var(--muted); font-size:13px; margin:0;}
-  nav{background:var(--bg); padding:12px 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:6px; border-bottom:1px solid var(--line);}
-  .tab{border:1px solid var(--line); background:var(--card); border-radius:10px; padding:12px 10px; font-size:14px; font-weight:600; color:var(--muted); cursor:pointer; text-align:center;}
-  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  nav{background:var(--bg); display:flex; overflow-x:auto; padding:6px 12px 0; border-bottom:1px solid var(--line); -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  nav::-webkit-scrollbar{display:none;}
+  .tab{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 13px 9px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; text-align:center; white-space:nowrap; border-bottom:3px solid transparent;}
+  .tab .ti{font-size:18px; line-height:1.2;}
+  .tab.active{color:var(--ink); border-bottom-color:var(--ink);}
   main{padding:18px 24px 28px;}
   section{display:none;} section.show{display:block;}
   h2{font-size:18px; margin:8px 0 12px; border-bottom:2px solid var(--line); padding-bottom:6px;}
@@ -38,9 +40,10 @@
 
   table.menu{width:100%; border-collapse:separate; border-spacing:4px; margin:0 0 22px; table-layout:fixed;}
   table.menu th{font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); text-align:left; padding:4px 10px; font-weight:600;}
-  table.menu th.day{width:118px;}
-  table.menu td{vertical-align:top; padding:9px 11px; border-radius:9px; font-size:13px; border:1px solid transparent; overflow-wrap:break-word;}
-  td.day{font-weight:700; background:#fff; border:1px solid var(--line); white-space:nowrap;}
+  table.menu th.day{width:46px;}
+  table.menu th.bf{width:21%;}
+  table.menu td{vertical-align:top; padding:8px 8px; border-radius:9px; font-size:12.5px; border:1px solid transparent; overflow-wrap:break-word;}
+  td.day{font-weight:700; background:#fff; border:1px solid var(--line);}
   td.day small{display:block; font-weight:600; color:var(--muted); font-size:10.5px; margin-top:2px;}
   .home{background:var(--home); border-color:var(--home-bd); color:var(--home-tx);}
   .out{background:var(--out); border-color:var(--out-bd); color:var(--out-tx);}
@@ -116,8 +119,8 @@
   .shop .amt{color:var(--muted); font-weight:400;}
   .shop .tr{display:block; color:var(--muted); font-size:12px; margin-top:1px;}
   .shopnote{font-size:12.5px; color:var(--muted); margin-top:16px;}
-  .tscroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:22px;}
-  .tscroll table.menu{margin-bottom:0; min-width:560px;}
+  .tscroll{margin-bottom:22px;}
+  .tscroll table.menu{margin-bottom:0;}
   .rater{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:var(--muted); font-weight:600;}
   .rbtn{border:1px solid var(--line); background:var(--card); border-radius:18px; padding:7px 16px; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer;}
   .rbtn.on{background:var(--ink); color:#fff; border-color:var(--ink);}
@@ -132,8 +135,12 @@
   .ovlbox p{margin:0 0 16px; font-weight:700; font-size:16px;}
   .rbtn.big{font-size:17px; padding:13px 30px; margin:0 7px;}
   .fbox{display:flex; gap:8px; margin:2px 0 4px;}
-  .fbox input{flex:1; min-width:0; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; background:var(--card); color:var(--ink);}
-  .fbox input:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
+  .fbox.fcol{flex-direction:column; align-items:stretch;}
+  .fbox textarea{border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; background:var(--card); color:var(--ink); font-family:inherit; resize:vertical; min-height:74px;}
+  .fbox textarea:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
+  .fbrow{display:flex; gap:8px; justify-content:flex-end;}
+  .fbrow .fbtn{padding:10px 16px;}
+  .wklink{font-size:12.5px; font-weight:700; color:var(--del-tx); text-decoration:none; float:right; margin-top:3px;}
   .fbtn{border:1px solid var(--line); background:var(--card); border-radius:12px; padding:0 14px; font-size:17px; cursor:pointer;}
   .fbtn.send{background:var(--ink); color:#fff; border-color:var(--ink); font-size:14px; font-weight:700;}
   .fbtn.rec{background:var(--no); border-color:var(--no-bd); animation:pulse 1.2s infinite;}
@@ -142,15 +149,16 @@
 </head>
 <body>
 <header>
-  <h1>🍽️ Deane Meals</h1>
+  <h1>🍽️ Deane Family Meals</h1>
+  <p class="sub">Batch Cooking Wizard</p>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
-  <div class="tab active" data-t="log">⭐ Dish Log</div>
-  <div class="tab" data-t="upcoming">🗓️ Upcoming Week Recipes</div>
-  <div class="tab" data-t="shop">🛒 Shopping List</div>
-  <div class="tab" data-t="menu">📅 4-Week Menu</div>
-  <div class="tab" data-t="likes">❤️ Likes &amp; Dislikes</div>
+  <div class="tab active" data-t="log"><span class="ti">⭐</span>Rate Past Dishes</div>
+  <div class="tab" data-t="upcoming"><span class="ti">🗓️</span>Upcoming Menu</div>
+  <div class="tab" data-t="shop"><span class="ti">🛒</span>Grocery List</div>
+  <div class="tab" data-t="menu"><span class="ti">📅</span>Monthly Menu</div>
+  <div class="tab" data-t="likes"><span class="ti">❤️</span>Likes &amp; Dislikes</div>
 </nav>
 <main>
 
@@ -184,9 +192,7 @@
 </section>
 
 <section id="log" class="show">
-  <p class="rules-line"><b>Rate a dish each time you make it.</b> Promotion rules:
-  <span class="st-love">We love</span> = three 5★ ratings · <span class="st-avoid">Avoid</span> = one 1★ (instant) or three 2★.
-  3★ and 4★ are neutral. Each click logs one rating; the Likes tab updates automatically.</p>
+  <p class="rules-line"><b>Tap the stars to rate.</b> 5★ = Love it! Make more often · 1★ = Not a fan, pass for next time.</p>
   <p class="savednote" id="savedNote"></p>
 
   <h3 class="grouphd latest">⭐ Latest batch — Thursday, Jul 2 (Italian) · rate these first</h3>
@@ -200,15 +206,23 @@
     <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
     <tbody id="logPrior"></tbody>
   </table>
+
+  <div class="foot">
+    <p><b>Promotion rules:</b> <span class="st-love">We love</span> = three 5★ ratings · <span class="st-avoid">Avoid</span> = one 1★ (instant) or three 2★. 3★ and 4★ are neutral. Each tap logs one rating; the Likes &amp; Dislikes tab updates automatically.</p>
+  </div>
 </section>
 
 <section id="upcoming">
-  <h2>Week of Jul 6–12 <span class="wk">· ask for changes below — dishes &amp; shopping list update automatically</span></h2>
+  <h2>Week of Jul 6–12</h2>
 
-  <div class="fbox">
-    <input id="fbText" type="text" maxlength="600" placeholder="Ask for a change… e.g. swap the salmon for cod">
-    <button id="fbMic" class="fbtn" title="Speak">🎤</button>
-    <button id="fbSend" class="fbtn send">Send</button>
+  <h3 class="grouphd latest" style="margin-top:0;">✏️ Type or Record Updates</h3>
+  <p class="rules-line" style="margin:0 0 8px;">Dishes will update automatically.</p>
+  <div class="fbox fcol">
+    <textarea id="fbText" maxlength="600" rows="3" placeholder="e.g. Swap the salmon for cod. No shrimp this week…"></textarea>
+    <div class="fbrow">
+      <button id="fbMic" class="fbtn" title="Speak">🎤</button>
+      <button id="fbSend" class="fbtn send">Send</button>
+    </div>
   </div>
   <p class="savednote" id="fbStatus"></p>
 
@@ -336,9 +350,9 @@ function renderBoards(){
   const love = ALL.filter(isLoved).map(d=>d.n);
   const avoid = ALL.filter(isAvoid).map(d=>d.n);
   document.getElementById('loveTags').innerHTML =
-    love.length ? love.map(n=>'<span class="tag like">👍 '+n+'</span>').join('') : '<span class="empty">Nothing qualifies yet.</span>';
+    love.length ? love.map(n=>'<span class="tag like">'+n+'</span>').join('') : '<span class="empty">Nothing qualifies yet.</span>';
   document.getElementById('avoidTags').innerHTML =
-    avoid.map(n=>'<span class="tag no">👎 '+n+'</span>').join('') +
+    avoid.map(n=>'<span class="tag no">'+n+'</span>').join('') +
     STATIC_NO.map(n=>'<span class="tag no">'+n+'</span>').join('');
 }
 const logRoot=document.getElementById('log');
@@ -420,7 +434,6 @@ async function sendFeedback(){
   fbSend.disabled=false; fbText.disabled=false;
 }
 fbSend.onclick=sendFeedback;
-fbText.addEventListener('keydown',e=>{ if(e.key==='Enter') sendFeedback(); });
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const micBtn=document.getElementById('fbMic');
 if(SR){
@@ -441,11 +454,12 @@ sb.channel('live')
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ fetchRatings(); fetchGroceries(); } });
 
 /* ---------- TABS ---------- */
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('section').forEach(s=>s.classList.remove('show'));
-  t.classList.add('active'); document.getElementById(t.dataset.t).classList.add('show');
-}));
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x.dataset.t===name));
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('show', s.id===name));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.t)));
 
 /* ---------- MENU ---------- */
 const WEEKS = [
@@ -457,7 +471,7 @@ const WEEKS = [
          ["Fri","","home|🍝 Homemade: Italian","out|🍷 Date night (kids: Italian)"],
          ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
          ["Sun","","del|🍜 Vietnamese","home|🍝 Homemade: Italian"]]},
-  {t:"Week 2 · 🌮 Taco Tuesday week", bMon:"🍳 Arepas · chia pudding", bThu:"🍳 Scallion pancakes · overnight oats",
+  {t:"Week 2 · 🌮 Taco Tuesday week", cur:true, bMon:"🍳 Arepas · chia pudding", bThu:"🍳 Scallion pancakes · overnight oats",
    rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🫓 Latin / Venezuelan|salmon + mackerel","home|🫓 Homemade: Latin"],
          ["Tue","","out|🍜 Vietnamese","home|🌮 Taco Tuesday (quick cook)"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
@@ -491,10 +505,11 @@ document.getElementById('menuTables').innerHTML = WEEKS.map(w=>{
     if(isMon) bf='<td class="bfast" rowspan="3">'+w.bMon+'</td>';
     else if(isThu) bf='<td class="bfast" rowspan="3">'+w.bThu+'</td>';
     else if(isSun) bf='<td class="home bfast">🥞 Pancakes</td>';
-    return '<tr><td class="day">'+r[0]+(r[1]?'<small>'+r[1]+'</small>':'')+'</td>'+(skipBf?'':bf)+cell(r[2])+cell(r[3])+'</tr>';
+    return '<tr><td class="day">'+r[0]+'</td>'+(skipBf?'':bf)+cell(r[2])+cell(r[3])+'</tr>';
   }).join('');
-  return '<h2>'+w.t.split(' · ')[0]+' <span class="wk">· '+w.t.split(' · ')[1]+'</span></h2>'+
-    '<div class="tscroll"><table class="menu"><tr><th class="day">Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div>';
+  return '<h2>'+(w.cur?'⭐ ':'')+w.t.split(' · ')[0]+' <span class="wk">· '+w.t.split(' · ')[1]+'</span>'+
+    (w.cur?'<a href="#" class="wklink" onclick="showTab(\'upcoming\');return false;">View recipes →</a>':'')+'</h2>'+
+    '<div class="tscroll"><table class="menu"><tr><th class="day"></th><th class="bf">Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div>';
 }).join('');
 
 renderLog(); renderBoards(); fetchRatings(); fetchGroceries(); fetchDishes();
