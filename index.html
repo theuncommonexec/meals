@@ -156,6 +156,8 @@
   .vmic .mi{width:34px; height:34px;}
   .tgrp{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700; margin:12px 0 7px;}
   .tgrp:first-child{margin-top:0;}
+  .wkblock.pastwk{opacity:.42; filter:grayscale(.35);}
+  #curwk{scroll-margin-top:8px;}
   .fbtn{border:1px solid var(--line); background:var(--card); border-radius:12px; padding:0 14px; font-size:17px; cursor:pointer;}
   .fbtn.send{background:var(--ink); color:#fff; border-color:var(--ink); font-size:14px; font-weight:700;}
   .fbtn.rec{background:var(--no); border-color:var(--no-bd); animation:pulse 1.2s infinite;}
@@ -493,13 +495,14 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ fetchRa
 function showTab(name){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x.dataset.t===name));
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('show', s.id===name));
-  window.scrollTo(0,0);
+  if(name==='menu'){ setTimeout(()=>{ const c=document.getElementById('curwk'); if(c) c.scrollIntoView({block:'start'}); },30); }
+  else window.scrollTo(0,0);
 }
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.t)));
 
 /* ---------- MENU ---------- */
 const WEEKS = [
-  {t:"Week 1 · 🍕 Pizza night week", bMon:"🍳 Savory steamed egg · chia pudding", bThu:"🍳 Spinach quiche · overnight oats",
+  {t:"Week 1 · 🍕 Pizza night week", past:true, bMon:"🍳 Savory steamed egg · chia pudding", bThu:"🍳 Spinach quiche · overnight oats",
    rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🥡 Chinese|salmon + mackerel","home|🥡 Homemade: Chinese"],
          ["Tue","","out|🥘 Mediterranean / Catalan","home|🥡 Homemade: Chinese"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
@@ -545,9 +548,10 @@ document.getElementById('menuTables').innerHTML = WEEKS.map(w=>{
     else if(isSun) bf='<td class="home bfast">🥞 Pancakes</td>';
     return '<tr><td class="day">'+r[0]+'</td>'+(skipBf?'':bf)+cell(r[2])+cell(r[3])+'</tr>';
   }).join('');
-  return '<h2>'+(w.cur?'⭐ ':'')+w.t.split(' · ')[0]+' <span class="wk">· '+w.t.split(' · ')[1]+'</span>'+
+  return '<div class="wkblock'+(w.past?' pastwk':'')+'"'+(w.cur?' id="curwk"':'')+'>'+
+    '<h2>'+(w.cur?'⭐ ':'')+w.t.split(' · ')[0]+' <span class="wk">· '+w.t.split(' · ')[1]+'</span>'+
     (w.cur?'<a href="#" class="wklink" onclick="showTab(\'upcoming\');return false;">View recipes →</a>':'')+'</h2>'+
-    '<div class="tscroll"><table class="menu"><tr><th class="day"></th><th class="bf">Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div>';
+    '<div class="tscroll"><table class="menu"><tr><th class="day"></th><th class="bf">Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div></div>';
 }).join('');
 
 renderLog(); renderBoards(); fetchRatings(); fetchGroceries(); fetchDishes();
