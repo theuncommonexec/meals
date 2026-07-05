@@ -105,9 +105,9 @@
   .grouphd.latest{color:var(--like-tx); font-size:15px; margin-top:6px;}
   .placeholder{background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:44px 24px; text-align:center; color:var(--muted); font-size:14px; line-height:1.7;}
   .dishlist{list-style:none; margin:0 0 8px; padding:0;}
-  .dishlist li{background:var(--card); border:1px solid var(--line); border-radius:9px; padding:9px 13px; margin-bottom:5px; font-size:13.5px;}
+  .dishlist li{background:var(--out); border:1px solid var(--out-bd); border-radius:9px; padding:9px 13px; margin-bottom:5px; font-size:13.5px; color:var(--out-tx);}
   .dishlist li b{color:var(--ink);}
-  .dishlist a{color:var(--del-tx); text-decoration:none;} .dishlist a:hover{text-decoration:underline;}
+  .dishlist a{color:var(--acc); text-decoration:none;} .dishlist a:hover{text-decoration:underline;}
   .dd{background:var(--card); border:1px solid var(--line); border-radius:9px; margin-bottom:6px; overflow:hidden;}
   .dd summary{cursor:pointer; padding:10px 13px; font-size:13.5px; list-style:none;}
   .dd summary::-webkit-details-marker{display:none;}
@@ -115,7 +115,7 @@
   .dd[open] summary::before{content:"▾";}
   .dd summary b{color:var(--ink);}
   .ddbody{padding:2px 14px 12px 32px; font-size:13px; color:var(--muted); line-height:1.55;}
-  .ddbody a{color:var(--del-tx); text-decoration:none; font-weight:600;}
+  .ddbody a{color:var(--acc); text-decoration:none; font-weight:600;}
   .ddbody a:hover{text-decoration:underline;}
   .shopcat{font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:20px 0 6px;}
   .shop{list-style:none; margin:0; padding:0;}
@@ -148,7 +148,7 @@
   .fbox textarea:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
   .fbrow{display:flex; gap:8px; justify-content:flex-end;}
   .fbrow .fbtn{padding:10px 16px;}
-  .wklink{font-size:12.5px; font-weight:700; color:var(--del-tx); text-decoration:none; float:right; margin-top:3px;}
+  .wklink{font-size:12.5px; font-weight:700; color:var(--acc); text-decoration:none; float:right; margin-top:3px;}
   .vui{display:none; flex-direction:column; align-items:center; gap:10px; padding:20px 0 10px;}
   .vui.on{display:flex;}
   .vmic{position:relative; width:76px; height:76px; border-radius:50%; background:var(--acc); color:#fff; font-size:32px; display:flex; align-items:center; justify-content:center; cursor:pointer;}
@@ -257,7 +257,7 @@
   <h3 class="grouphd latest" style="margin-top:36px;">🥡 Thursday batch — Chinese</h3>
   <div id="dishThu"><p class="empty">Loading…</p></div>
 
-  <h3 class="grouphd">Around the week</h3>
+  <h3 class="grouphd">Eat Out or Delivery</h3>
   <ul class="dishlist">
     <li><b>Sat dinner:</b> Ametller sushi (takeout)</li>
     <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> Indian</li>
