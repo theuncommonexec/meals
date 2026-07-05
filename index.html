@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deane Meals</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#fbfcfd">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  :root{
+    color-scheme: light;
+    --like:#e6f4ea; --like-bd:#34a853; --like-tx:#1e7e34;
+    --ok:#fff8e1;   --ok-bd:#f6c344;   --ok-tx:#9a7400;
+    --no:#fdecea;   --no-bd:#e8503a;   --no-tx:#b5341f;
+    --na:#f1f3f5;   --na-bd:#d4d9df;   --na-tx:#8a929b;
+    --home:#e6f4ea; --home-bd:#34a853; --home-tx:#1e7e34;
+    --out:#fff4e0;  --out-bd:#f6a609;  --out-tx:#b9770a;
+    --del:#e8f0fe;  --del-bd:#4285f4;  --del-tx:#1a56c4;
+    --cook:#d3edd9; --amb:#f1f3f5;
+    --ink:#27303a; --muted:#6b7480; --line:#e3e7ec; --bg:#fbfcfd; --card:#fff; --star:#f5a623;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink); background:var(--bg); margin:0; padding:0 0 50px; line-height:1.45;}
+  header{padding:16px 14px 0;}
+  h1{font-size:21px; margin:0 0 2px;}
+  .sub{color:var(--muted); font-size:13px; margin:0;}
+  nav{background:var(--bg); padding:12px 14px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:6px; border-bottom:1px solid var(--line);}
+  .tab{border:1px solid var(--line); background:var(--card); border-radius:10px; padding:12px 10px; font-size:14px; font-weight:600; color:var(--muted); cursor:pointer; text-align:center;}
+  .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  main{padding:18px 14px;}
+  section{display:none;} section.show{display:block;}
+  h2{font-size:18px; margin:8px 0 12px; border-bottom:2px solid var(--line); padding-bottom:6px;}
+  h2 .wk{font-size:13px; font-weight:400; color:var(--muted);}
+
+  table.menu{width:100%; border-collapse:separate; border-spacing:4px; margin:0 0 22px; table-layout:fixed;}
+  table.menu th{font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); text-align:left; padding:4px 10px; font-weight:600;}
+  table.menu th.day{width:118px;}
+  table.menu td{vertical-align:top; padding:9px 11px; border-radius:9px; font-size:13px; border:1px solid transparent; overflow-wrap:break-word;}
+  td.day{font-weight:700; background:#fff; border:1px solid var(--line); white-space:nowrap;}
+  td.day small{display:block; font-weight:600; color:var(--muted); font-size:10.5px; margin-top:2px;}
+  .home{background:var(--home); border-color:var(--home-bd); color:var(--home-tx);}
+  .out{background:var(--out); border-color:var(--out-bd); color:var(--out-tx);}
+  .del{background:var(--del); border-color:var(--del-bd); color:var(--del-tx);}
+  .cook{background:var(--cook); border-color:var(--home-bd); color:var(--home-tx); font-weight:700;}
+  .amb{background:var(--amb); border-color:var(--line); color:var(--muted); font-style:italic;}
+  .bfast{background:var(--home); border-color:var(--home-bd); color:var(--home-tx); vertical-align:middle; font-size:12px;}
+  .fish{display:block; font-weight:600; font-size:11px; opacity:.85; margin-top:3px;}
+  .legend{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px;}
+  .chip{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; padding:5px 11px; border-radius:18px; border:1px solid var(--line); background:#fff;}
+  .sw{width:12px; height:12px; border-radius:4px; border:1px solid rgba(0,0,0,.12);}
+  .rules-line{font-size:12.5px; color:var(--muted); max-width:900px; margin:0 0 16px;}
+  .rules-line b{color:var(--ink);}
+  .foot{margin-top:8px; padding-top:16px; border-top:1px solid var(--line); font-size:12.5px; color:var(--muted); max-width:920px;}
+  .foot p{margin:0 0 7px;} .foot b{color:var(--ink);}
+
+  .cols{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:720px){.cols{grid-template-columns:1fr;}}
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px;}
+  .panel.like{border-top:4px solid var(--like-bd);}
+  .panel.no{border-top:4px solid var(--no-bd);}
+  .panel h3{margin:0 0 12px; font-size:15px;}
+  .tag{display:inline-flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--line); border-radius:18px; padding:6px 12px; margin:0 6px 8px 0; font-size:12.5px; font-weight:600;}
+  .tag.like{background:var(--like); border-color:var(--like-bd); color:var(--like-tx);}
+  .tag.no{background:var(--no); border-color:var(--no-bd); color:var(--no-tx);}
+  .empty{color:var(--muted); font-size:12.5px; font-style:italic;}
+  .rules{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 18px; margin-top:16px;}
+  .rules h3{margin:0 0 8px; font-size:15px;}
+  .person{display:flex; gap:10px; padding:7px 0; border-top:1px dashed var(--line); font-size:13px;}
+  .person:first-of-type{border-top:none;}
+  .who{font-weight:700; min-width:48px;}
+  .house{font-size:12.5px; color:var(--muted); margin-top:10px;} .house b{color:var(--ink);}
+
+  table.log{width:100%; border-collapse:separate; border-spacing:0 6px;}
+  table.log th{font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); text-align:left; padding:4px 12px;}
+  table.log td{background:var(--card); padding:9px 12px; font-size:13.5px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); vertical-align:middle;}
+  table.log td:first-child{border-left:1px solid var(--line); border-radius:9px 0 0 9px; font-weight:600;}
+  table.log td:last-child{border-right:1px solid var(--line); border-radius:0 9px 9px 0;}
+  .cz{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em;}
+  .note{font-size:12.5px; color:var(--muted);}
+  .stars{white-space:nowrap; font-size:20px; line-height:1; user-select:none;}
+  .stars span.st{cursor:pointer; color:#d8dde2; padding:0 1px;}
+  .stars span.st.on{color:var(--star);}
+  .statusline{font-size:11.5px; margin-top:3px; white-space:nowrap;}
+  .st-love{color:var(--like-tx); font-weight:700;}
+  .st-avoid{color:var(--no-tx); font-weight:700;}
+  .st-prog{color:var(--muted);}
+  .clr{font-size:10.5px; color:var(--muted); cursor:pointer; text-decoration:underline; margin-left:6px;}
+  .barL{box-shadow:inset 4px 0 0 var(--like-bd);}
+  .barO{box-shadow:inset 4px 0 0 var(--ok-bd);}
+  .barN{box-shadow:inset 4px 0 0 var(--no-bd);}
+  .barX{box-shadow:inset 4px 0 0 var(--na-bd);}
+  .savednote{font-size:12px; color:var(--like-tx); margin:0 0 12px; min-height:16px; font-weight:600;}
+  .grouphd{font-size:14px; margin:22px 0 8px; color:var(--muted); font-weight:700;}
+  .grouphd.latest{color:var(--like-tx); font-size:15px; margin-top:6px;}
+  .placeholder{background:var(--card); border:1px dashed var(--line); border-radius:14px; padding:44px 24px; text-align:center; color:var(--muted); font-size:14px; line-height:1.7;}
+  .dishlist{list-style:none; margin:0 0 8px; padding:0;}
+  .dishlist li{background:var(--card); border:1px solid var(--line); border-radius:9px; padding:9px 13px; margin-bottom:5px; font-size:13.5px;}
+  .dishlist li b{color:var(--ink);}
+  .dishlist a{color:var(--del-tx); text-decoration:none;} .dishlist a:hover{text-decoration:underline;}
+  .dd{background:var(--card); border:1px solid var(--line); border-radius:9px; margin-bottom:6px; overflow:hidden;}
+  .dd summary{cursor:pointer; padding:10px 13px; font-size:13.5px; list-style:none;}
+  .dd summary::-webkit-details-marker{display:none;}
+  .dd summary::before{content:"▸"; color:var(--muted); margin-right:8px; display:inline-block;}
+  .dd[open] summary::before{content:"▾";}
+  .dd summary b{color:var(--ink);}
+  .ddbody{padding:2px 14px 12px 32px; font-size:13px; color:var(--muted); line-height:1.55;}
+  .ddbody a{color:var(--del-tx); text-decoration:none; font-weight:600;}
+  .ddbody a:hover{text-decoration:underline;}
+  .shopcat{font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:20px 0 6px;}
+  .shop{list-style:none; margin:0; padding:0;}
+  .shop li{padding:5px 2px; font-size:14.5px; border-bottom:1px solid var(--line);}
+  .shop .amt{color:var(--muted); font-weight:400;}
+  .shop .tr{display:block; color:var(--muted); font-size:12px; margin-top:1px;}
+  .shopnote{font-size:12.5px; color:var(--muted); margin-top:16px;}
+  .tscroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:22px;}
+  .tscroll table.menu{margin-bottom:0; min-width:560px;}
+  .rater{display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; color:var(--muted); font-weight:600;}
+  .rbtn{border:1px solid var(--line); background:var(--card); border-radius:18px; padding:7px 16px; font-size:13px; font-weight:700; color:var(--muted); cursor:pointer;}
+  .rbtn.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .shop li label{display:flex; align-items:flex-start; gap:10px; cursor:pointer;}
+  .shop li input{width:19px; height:19px; margin-top:2px; accent-color:var(--like-bd); flex-shrink:0;}
+  .shop li.done span.itx{text-decoration:line-through; color:var(--muted);}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍽️ Deane Meals</h1>
+  <div class="rater">I am: <button id="rYue" class="rbtn">Yue</button><button id="rTom" class="rbtn">Tom</button></div>
+</header>
+<nav>
+  <div class="tab active" data-t="log">⭐ Dish Log</div>
+  <div class="tab" data-t="upcoming">🗓️ Upcoming Week Recipes</div>
+  <div class="tab" data-t="shop">🛒 Shopping List</div>
+  <div class="tab" data-t="menu">📅 4-Week Menu</div>
+  <div class="tab" data-t="likes">❤️ Likes &amp; Dislikes</div>
+</nav>
+<main>
+
+<section id="menu">
+  <div class="legend">
+    <span class="chip"><span class="sw" style="background:var(--cook);border-color:var(--home-bd);"></span>Cook day</span>
+    <span class="chip"><span class="sw" style="background:var(--home);border-color:var(--home-bd);"></span>Home</span>
+    <span class="chip"><span class="sw" style="background:var(--out);border-color:var(--out-bd);"></span>Eat out</span>
+    <span class="chip"><span class="sw" style="background:var(--del);border-color:var(--del-bd);"></span>Delivery</span>
+    <span class="chip"><span class="sw" style="background:var(--amb);border-color:var(--line);"></span>Out &amp; about</span>
+  </div>
+  <div id="menuTables"></div>
+  <div class="foot">
+    <p><b>🍳 Cook at home:</b> Chinese · Latin · Italian · Japanese · Korean · Taco Tuesday · home burgers — 2 fish per cook day.</p>
+    <p><b>🛎️ Order out:</b> Vietnamese · Indian · Malaysian · tapas · sushi (×2/mo) · pizza (≥ monthly).</p>
+  </div>
+</section>
+
+<section id="likes">
+  <div class="cols">
+    <div class="panel like"><h3>👍 We love</h3><div id="loveTags"></div></div>
+    <div class="panel no"><h3>👎 Avoid</h3><div id="avoidTags"></div></div>
+  </div>
+  <div class="rules">
+    <h3>Per-person notes</h3>
+    <div class="person"><span class="who">Tom</span><span>Pescatarian (fish &amp; eggs). No beets. No sweet flavors in his dishes — keep fish/egg/tofu/veg savory. Meat dishes (he doesn't eat) can be a bit sweet.</span></div>
+    <div class="person"><span class="who">Yue</span><span>No oranges / citrus flavors. Likes sweet sometimes (e.g. sweet-and-sour on the meat dishes).</span></div>
+    <div class="person"><span class="who">Kids</span><span>Love thin tomato pasta, chia pudding, baked purple yam. Soft fruit only in oats/chia.</span></div>
+    <div class="house"><b>House rules:</b> pasta sauce thin &amp; liquid · soups hot, max 1/week · honey not sugar · olive oil not butter · tofu/vegan can be spicy · ≥1 chicken dish per batch.</div>
+  </div>
+</section>
+
+<section id="log" class="show">
+  <p class="rules-line"><b>Rate a dish each time you make it.</b> Promotion rules:
+  <span class="st-love">We love</span> = three 5★ ratings · <span class="st-avoid">Avoid</span> = one 1★ (instant) or three 2★.
+  3★ and 4★ are neutral. Each click logs one rating; the Likes tab updates automatically.</p>
+  <p class="savednote" id="savedNote"></p>
+
+  <h3 class="grouphd latest">⭐ Latest batch — Thursday, Jul 2 (Italian) · rate these first</h3>
+  <table class="log">
+    <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
+    <tbody id="logLatest"></tbody>
+  </table>
+
+  <h3 class="grouphd">Prior dishes</h3>
+  <table class="log">
+    <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
+    <tbody id="logPrior"></tbody>
+  </table>
+</section>
+
+<section id="upcoming">
+  <h2>Week of Jul 6–12 <span class="wk">· proposed — pending Tom's feedback</span></h2>
+
+  <h3 class="grouphd latest">🫓 Monday batch — Latin / Venezuelan</h3>
+  <details class="dd"><summary><b>Meat 1:</b> Instant Pot kalua pork</summary><div class="ddbody">Cube pork shoulder, layer with a few slices of bacon and coarse (Hawaiian) sea salt. Pressure cook 35 min high, natural release, then shred. Cook shredded cabbage in the smoky broth if you like.<br><a href="https://nomnompaleo.com/post/111934821818/pressure-cooker-kalua-pig" target="_blank">Recipe → Nom Nom Paleo</a></div></details>
+  <details class="dd"><summary><b>Meat 2:</b> Beef picadillo — doubles for Taco Tuesday</summary><div class="ddbody">Brown ground beef, add a sofrito of onion, garlic and pepper, then tomato, cumin, and a few olives/capers. Simmer to a savory mince. Save half for Tuesday's tacos.<br><a href="https://www.laylita.com/recipes/picadillo-recipe/" target="_blank">Recipe → Laylita</a></div></details>
+  <details class="dd"><summary><b>Fish:</b> Pan-seared salmon with chimichurri</summary><div class="ddbody">Sear salmon in olive oil, skin-side down, until crisp. Top with chimichurri (parsley, oregano, garlic, red pepper, vinegar, oil) — kept savory for Tom.<br><a href="https://www.laylita.com/recipes/2013/07/27/traditional-chimichurri-sauce/" target="_blank">Chimichurri → Laylita</a></div></details>
+  <details class="dd"><summary><b>Seafood:</b> Baked gambas al ajillo (garlic shrimp)</summary><div class="ddbody">Toss shrimp with lots of sliced garlic, olive oil, a pinch of chili and parsley; bake hot until just pink. Quick and savory.<br><a href="https://www.laylita.com/recipes/gambas-al-ajillo-spanish-garlic-shrimp/" target="_blank">Recipe → Laylita</a></div></details>
+  <details class="dd"><summary><b>Veggie 1:</b> Sautéed green beans with garlic & tomato</summary><div class="ddbody">Sauté green beans with garlic, add chopped tomato, cook until tender-crisp; season with salt.</div></details>
+  <details class="dd"><summary><b>Veggie 2:</b> Tostones (savory fried green plantains)</summary><div class="ddbody">Slice green plantains, fry, smash flat, fry again until crisp; salt. Serve with a garlic dip.</div></details>
+  <details class="dd"><summary><b>Side/carb:</b> Corn fritters — torrejas de choclo</summary><div class="ddbody">Blend fresh corn with egg, a little flour and cheese; pan-fry small fritters until golden.<br><a href="https://www.laylita.com/recipes/ecuadorian-torrejas-de-choclo-corn-fritters/" target="_blank">Recipe → Laylita</a></div></details>
+  <details class="dd"><summary><b>Breakfast 1:</b> Arepas with egg & avocado</summary><div class="ddbody">Mix masarepa, water and salt; form patties, griddle then finish in the oven. Split and fill with scrambled egg and avocado.</div></details>
+  <details class="dd"><summary><b>Breakfast 2:</b> Banana-almond-cocoa bread</summary><div class="ddbody">Mash banana, whisk with eggs, almond flour, cocoa, honey and baking soda; bake ~40 min. Low-sugar family favorite, batches well.</div></details>
+  <details class="dd"><summary><b>🌮 Taco Tuesday:</b> picadillo / salmon tacos</summary><div class="ddbody">Warm quality corn tortillas; fill with beef picadillo (or flaked salmon), top with guacamole and pico de gallo. Reuses Monday's meat & fish.</div></details>
+  <details class="dd"><summary><b>Taco side:</b> Guacamole (make)</summary><div class="ddbody">Mash avocado with lime juice; mix in diced onion, jalapeño/serrano, crushed garlic, chopped cilantro and salt. Leave a few chunks.<br><a href="https://www.laylita.com/recipes/guacamole/" target="_blank">Recipe → Laylita</a></div></details>
+  <details class="dd"><summary><b>Taco side:</b> Pico de gallo (make)</summary><div class="ddbody">Finely dice tomato, onion, cilantro and jalapeño; toss with lime juice and salt. Let it sit a few minutes before serving. <i>(No dedicated recipe on your saved sites — it's a quick chop-and-mix.)</i></div></details>
+  <details class="dd"><summary><b>Taco side:</b> Tortilla chips (buy)</summary><div class="ddbody">Store-bought — grab a good-quality bag of corn tortilla chips.</div></details>
+
+  <h3 class="grouphd latest" style="margin-top:36px;">🥡 Thursday batch — Chinese</h3>
+  <details class="dd"><summary><b>Meat 1:</b> Three cup chicken (san bei ji)</summary><div class="ddbody">Brown bone-in chicken pieces, then braise with roughly equal "cups" of sesame oil, soy sauce and rice wine plus ginger, garlic and a little sugar. Reduce to a glaze and finish with lots of Thai basil.<br><a href="https://redhousespice.com/three-cup-chicken/" target="_blank">Recipe → Red House Spice</a></div></details>
+  <details class="dd"><summary><b>Meat 2:</b> Instant Pot hong shao pork with daikon & carrot</summary><div class="ddbody">Blanch pork (belly or shoulder). Pressure cook 25 min high with Shaoxing wine, light + dark soy, ginger, star anise and bay; natural release. Switch to Sauté, add daikon, carrot and rock sugar, simmer ~10–12 min until tender and glossy.<br><a href="https://redhousespice.com/red-cooked-pork-belly/" target="_blank">Base recipe → Red House Spice</a></div></details>
+  <details class="dd"><summary><b>Fish:</b> Steamed fish, Chinese style (清蒸鱼)</summary><div class="ddbody">Steam a whole fish or fillets with ginger and scallion until just cooked. Top with fresh scallion and cilantro, pour over a light soy dressing, then sizzle hot oil on top. Clean and savory.<br><a href="https://redhousespice.com/chinese-steamed-fish/" target="_blank">Recipe → Red House Spice</a></div></details>
+  <details class="dd"><summary><b>Veggie 1:</b> Stir-fried gai lan (Chinese broccoli)</summary><div class="ddbody">Blanch gai lan briefly, then stir-fry with garlic and finish with oyster sauce or a splash of soy.</div></details>
+  <details class="dd"><summary><b>Veggie 2:</b> Carrot, celery, mushroom & wood-ear stir-fry (meatless)</summary><div class="ddbody">Stir-fry carrot and celery in garlic oil, add mushroom and soaked wood ear, then a sauce of light + dark soy, oyster sauce, cornstarch, pepper, a pinch of sugar and sesame oil. Toss until glossy; finish with scallion.<br><a href="https://redhousespice.com/chicken-mushroom-stir-fry/" target="_blank">Base recipe (meatless) → Red House Spice</a></div></details>
+  <details class="dd"><summary><b>Combined:</b> Soy-sauce chow mein</summary><div class="ddbody">Boil noodles, then stir-fry with your choice of protein and greens in a soy-sauce mix. The kids' favorite.<br><a href="https://redhousespice.com/chow-mein/" target="_blank">Recipe → Red House Spice</a></div></details>
+  <details class="dd"><summary><b>Breakfast 1:</b> Whole-wheat scallion pancakes</summary><div class="ddbody">Make a soft dough, coil with scallions and a little oil, roll flat and pan-fry until crisp. Batch and freeze; reheat in a pan.</div></details>
+  <details class="dd"><summary><b>Breakfast 2:</b> Banana overnight oats</summary><div class="ddbody">Combine oats, milk, mashed banana and cinnamon; chill overnight. Top with soft fruit (berries) before serving.</div></details>
+
+  <h3 class="grouphd">Around the week</h3>
+  <ul class="dishlist">
+    <li><b>Sat dinner:</b> Ametller sushi (takeout)</li>
+    <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> Indian</li>
+    <li><b>Tue lunch:</b> Vietnamese (out) · <b>Fri:</b> date night</li>
+  </ul>
+</section>
+
+<section id="shop">
+  <h2>🛒 Shopping list <span class="wk">· Monday shop — week of Jul 6</span></h2>
+  <p class="savednote" id="shopNote"></p>
+  <div id="shopLists"><p class="empty">Loading…</p></div>
+  <p class="shopnote">Probably have — check: olive oil, coarse salt, cumin, dried oregano, dried chili flakes, red wine vinegar, cocoa powder, baking soda.<br>Thursday's list coming later this week.</p>
+</section>
+</main>
+
+<script>
+/* ---------- DATA ---------- */
+const LATEST = [
+  {n:"Textured soy & egg in tomato sauce", c:"Italian"},
+  {n:"Baked orata with lemon, capers & oregano", c:"Italian"},
+  {n:"Roasted broccoli, garlic & lemon", c:"Italian"},
+  {n:"Chicken thigh with cherry tomatoes & basil in tomato sauce", c:"Italian"},
+  {n:"Pork chops with pesto & garlic", c:"Italian"},
+  {n:"Pasta with pesto", c:"Italian"},
+  {n:"Egg muffin with spinach & zucchini", c:"Breakfast"},
+  {n:"Banana, cinnamon & honey overnight oats", c:"Breakfast"},
+];
+const DISHES = [
+  {n:"Ginger-scallion steamed salmon", c:"Chinese"},
+  {n:"Teriyaki chicken", c:"Chinese/JP"},
+  {n:"Egg quiche w/ zucchini & mushroom", c:"Breakfast", loved:true},
+  {n:"Mango & blueberry chia pudding (+ oats)", c:"Breakfast", loved:true},
+  {n:"Baked purple yam", c:"Side", loved:true},
+  {n:"Broccolini + bok choy + mushroom stir-fry", c:"Chinese"},
+  {n:"Cantonese black-bean beef stir-fry", c:"Chinese"},
+  {n:"Pasta alla puttanesca", c:"Italian", loved:true},
+  {n:"Spaghetti, thin liquid tomato sauce", c:"Italian", loved:true},
+  {n:"Pasta with tuna & basil pesto", c:"Italian", loved:true},
+  {n:"Ramen with tofu/pork", c:"Chinese/JP", loved:true},
+  {n:"Miso soup with noodles + tofu", c:"Japanese", loved:true},
+  {n:"Korean bibimbap", c:"Korean", loved:true},
+  {n:"Arroz a la cubana", c:"Latin", loved:true},
+  {n:"Fish tacos, avocado & pico", c:"Mexican", loved:true},
+  {n:"Pumpkin-ginger cream (hot)", c:"Soup", loved:true},
+  {n:"Banana bread, almonds & cocoa", c:"Breakfast", loved:true},
+];
+const STATIC_NO = ["Cold soups / gazpacho","Peanut butter sauce","Hummus-thick gloppy sauces","Vegan / substitute eggs","Oats with apple","Papaya","Beets (Tom)","Oranges / citrus (Yue)","Too much mint","Strong spirulina"];
+const ALL = LATEST.concat(DISHES);
+
+/* ---------- SHARED DATABASE ---------- */
+const sb = window.supabase.createClient(
+  "https://foukqpevshhnnqhfordy.supabase.co",
+  "sb_publishable_aV1_7A_w9Ug3cUOBEeT2mQ_Qi9Zarlz");
+const WEEK = "2026-07-06";
+let userR = {};     // dish -> [stars,...] oldest to newest (all raters combined)
+let lastRow = {};   // dish -> id of most recent rating (for undo)
+let groceries = [];
+let rater = localStorage.getItem("deaneRater") || "";
+
+function setRater(n){ rater=n; localStorage.setItem("deaneRater",n);
+  document.getElementById("rYue").classList.toggle("on",n==="Yue");
+  document.getElementById("rTom").classList.toggle("on",n==="Tom"); }
+document.getElementById("rYue").onclick=()=>setRater("Yue");
+document.getElementById("rTom").onclick=()=>setRater("Tom");
+if(rater) setRater(rater);
+
+async function fetchRatings(){
+  const {data,error}=await sb.from("ratings").select("id,dish,rater,stars").order("id");
+  if(error){ flash("⚠️ couldn't load ratings — "+error.message); return; }
+  userR={}; lastRow={};
+  data.forEach(r=>{ (userR[r.dish]=userR[r.dish]||[]).push(r.stars); lastRow[r.dish]=r.id; });
+  renderLog(); renderBoards();
+}
+async function fetchGroceries(){
+  const {data,error}=await sb.from("grocery_items").select("*").eq("week",WEEK).order("id");
+  if(error){ document.getElementById("shopLists").innerHTML='<p class="empty">⚠️ couldn\'t load the list — '+error.message+'</p>'; return; }
+  groceries=data; renderShop();
+}
+
+function hist(d){ return userR[d.n]||[]; }
+function displayVal(d){ const h=hist(d); if(h.length) return h[h.length-1]; return d.loved?5:0; }
+function counts(d){ const h=hist(d); return {
+  ones:h.filter(x=>x===1).length, twos:h.filter(x=>x===2).length,
+  fives:h.filter(x=>x===5).length, n:h.length, h:h }; }
+function isAvoid(d){ const c=counts(d); return c.ones>=1 || c.twos>=3; }
+function isLoved(d){ if(isAvoid(d)) return false; return !!d.loved || counts(d).fives>=3; }
+
+/* ---------- LOG ---------- */
+function bar(d){ return isLoved(d)?"barL":isAvoid(d)?"barN":counts(d).n?"barO":"barX"; }
+function statusLine(d){
+  const c=counts(d);
+  if(isAvoid(d)){
+    const why = c.ones>=1 ? "1★ given" : "2★ ×"+c.twos;
+    return '<span class="st-avoid">✗ Avoid ('+why+')</span>';
+  }
+  if(isLoved(d)){
+    if(d.loved && c.fives<3) return '<span class="st-love">✓ Loved</span>';
+    return '<span class="st-love">✓ Loved (3× 5★)</span>';
+  }
+  let bits=[];
+  if(c.fives) bits.push(c.fives+"/3 five-star → love");
+  if(c.twos) bits.push(c.twos+"/3 two-star → avoid");
+  if(!bits.length) return '<span class="st-prog">no ratings yet</span>';
+  return '<span class="st-prog">'+bits.join(" · ")+'</span>';
+}
+function starPicker(d){
+  const disp=displayVal(d);
+  let s='<span class="stars" data-d="'+encodeURIComponent(d.n)+'" data-disp="'+disp+'">';
+  for(let i=1;i<=5;i++) s+='<span class="st'+(i<=disp?' on':'')+'" data-v="'+i+'">★</span>';
+  s+='</span>';
+  const hasUser=(userR[d.n]&&userR[d.n].length);
+  return '<div>'+s+(hasUser?'<span class="clr" data-d="'+encodeURIComponent(d.n)+'">undo</span>':'')+'</div>'+
+         '<div class="statusline">'+statusLine(d)+'</div>';
+}
+function rowHtml(d){
+  return '<tr><td class="'+bar(d)+'">'+d.n+'</td><td>'+starPicker(d)+'</td></tr>';
+}
+function renderLog(){
+  document.getElementById('logLatest').innerHTML = LATEST.map(rowHtml).join('');
+  document.getElementById('logPrior').innerHTML = DISHES.map(rowHtml).join('');
+}
+function renderBoards(){
+  const love = ALL.filter(isLoved).map(d=>d.n);
+  const avoid = ALL.filter(isAvoid).map(d=>d.n);
+  document.getElementById('loveTags').innerHTML =
+    love.length ? love.map(n=>'<span class="tag like">👍 '+n+'</span>').join('') : '<span class="empty">Nothing qualifies yet.</span>';
+  document.getElementById('avoidTags').innerHTML =
+    avoid.map(n=>'<span class="tag no">👎 '+n+'</span>').join('') +
+    STATIC_NO.map(n=>'<span class="tag no">'+n+'</span>').join('');
+}
+const logRoot=document.getElementById('log');
+function fillTo(wrap,v){ wrap.querySelectorAll('.st').forEach(c=>c.classList.toggle('on', (+c.dataset.v)<=v)); }
+logRoot.addEventListener('mouseover', e=>{ const st=e.target.closest('.st'); if(!st)return; fillTo(st.closest('.stars'), +st.dataset.v); });
+logRoot.addEventListener('mouseout', e=>{ const wrap=e.target.closest('.stars'); if(!wrap)return; if(e.relatedTarget&&wrap.contains(e.relatedTarget))return; fillTo(wrap, +wrap.dataset.disp); });
+logRoot.addEventListener('click', async e=>{
+  const star=e.target.closest('span.st'), wrap=e.target.closest('.stars'), clr=e.target.closest('.clr');
+  if(clr){
+    const nm=decodeURIComponent(clr.dataset.d);
+    if(!lastRow[nm]) return;
+    const {error}=await sb.from('ratings').delete().eq('id',lastRow[nm]);
+    if(error){ flash('⚠️ '+error.message); return; }
+    flash('Removed last rating for “'+nm+'”'); fetchRatings(); return;
+  }
+  if(star&&wrap){
+    if(!rater){ flash('☝️ First tap your name at the top (Yue or Tom)'); return; }
+    const nm=decodeURIComponent(wrap.dataset.d); const v=+star.dataset.v;
+    (userR[nm]=userR[nm]||[]).push(v); renderLog(); renderBoards();
+    const {error}=await sb.from('ratings').insert({dish:nm, rater:rater, stars:v});
+    if(error){ flash('⚠️ not saved — '+error.message); fetchRatings(); return; }
+    flash(rater+' logged '+v+'★ for “'+nm+'”'); fetchRatings();
+  }
+});
+let flashT;
+function flash(m){ const n=document.getElementById('savedNote'); n.textContent='✓ '+m; clearTimeout(flashT); flashT=setTimeout(()=>n.textContent='',2600); }
+
+/* ---------- SHOPPING LIST ---------- */
+function renderShop(){
+  const box=document.getElementById('shopLists');
+  if(!groceries.length){ box.innerHTML='<p class="empty">No list for this week yet.</p>'; document.getElementById('shopNote').textContent=''; return; }
+  const cats=[]; groceries.forEach(g=>{ if(!cats.includes(g.category)) cats.push(g.category); });
+  box.innerHTML=cats.map(c=>'<div class="shopcat">'+c+'</div><ul class="shop">'+
+    groceries.filter(g=>g.category===c).map(g=>{
+      const p=g.item.split('||');
+      return '<li class="'+(g.checked?'done':'')+'"><label><input type="checkbox" data-id="'+g.id+'"'+(g.checked?' checked':'')+'><span class="itx">'+p[0]+(p[1]?'<span class="tr">'+p[1]+'</span>':'')+'</span></label></li>';
+    }).join('')+'</ul>').join('');
+  const done=groceries.filter(g=>g.checked).length;
+  document.getElementById('shopNote').textContent = done ? '✓ '+done+' of '+groceries.length+' in the basket' : '';
+}
+document.getElementById('shopLists').addEventListener('change', async e=>{
+  const cb=e.target.closest('input[type=checkbox]'); if(!cb) return;
+  const id=+cb.dataset.id, chk=cb.checked;
+  const g=groceries.find(x=>x.id===id); if(g) g.checked=chk;
+  renderShop();
+  const {error}=await sb.from('grocery_items').update({checked:chk, checked_by:rater||null, updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){ if(g) g.checked=!chk; renderShop(); }
+});
+
+/* ---------- LIVE UPDATES ---------- */
+sb.channel('live')
+  .on('postgres_changes',{event:'*',schema:'public',table:'ratings'},()=>fetchRatings())
+  .on('postgres_changes',{event:'*',schema:'public',table:'grocery_items'},()=>fetchGroceries())
+  .subscribe();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ fetchRatings(); fetchGroceries(); } });
+
+/* ---------- TABS ---------- */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('show'));
+  t.classList.add('active'); document.getElementById(t.dataset.t).classList.add('show');
+}));
+
+/* ---------- MENU ---------- */
+const WEEKS = [
+  {t:"Week 1 · 🍕 Pizza night week", bMon:"🍳 Savory steamed egg · chia pudding", bThu:"🍳 Spinach quiche · overnight oats",
+   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🥡 Chinese|salmon + mackerel","home|🥡 Homemade: Chinese"],
+         ["Tue","","out|🥘 Mediterranean / Catalan","home|🥡 Homemade: Chinese"],
+         ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
+         ["Thu","cook + grocery","cook|🍳 Cooking: 🍝 Italian|salmon + sardines","home|🍝 Homemade: Italian"],
+         ["Fri","","home|🍝 Homemade: Italian","out|🍷 Date night (kids: Italian)"],
+         ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
+         ["Sun","","del|🍜 Vietnamese","home|🍝 Homemade: Italian"]]},
+  {t:"Week 2 · 🌮 Taco Tuesday week", bMon:"🍳 Arepas · chia pudding", bThu:"🍳 Scallion pancakes · overnight oats",
+   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🫓 Latin / Venezuelan|salmon + mackerel","home|🫓 Homemade: Latin"],
+         ["Tue","","out|🍜 Vietnamese","home|🌮 Taco Tuesday (quick cook)"],
+         ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
+         ["Thu","cook + grocery","cook|🍳 Cooking: 🥡 Chinese|mackerel + sardines","home|🥡 Homemade: Chinese"],
+         ["Fri","","home|🥡 Homemade: Chinese","out|🍷 Date night (kids: Chinese)"],
+         ["Sat","","amb|Out & about","del|🍣 Ametller sushi"],
+         ["Sun","","del|🍛 Indian","home|🥡 Homemade: Chinese"]]},
+  {t:"Week 3 · 🍔 Home burger week", bMon:"🍳 Tortilla de patatas · fruit", bThu:"🍳 Savory steamed egg · chia pudding",
+   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🍝 Italian|salmon + sardines","home|🍝 Homemade: Italian"],
+         ["Tue","","out|🍲 Malaysian","home|🍝 Homemade: Italian"],
+         ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
+         ["Thu","cook + grocery","cook|🍳 Cooking: 🍱 Japanese|salmon + tuna","home|🍱 Homemade: Japanese"],
+         ["Fri","","home|🍱 Homemade: Japanese","out|🍷 Date night (kids: Japanese)"],
+         ["Sat","","amb|Out & about","home|🍔 Home burgers"],
+         ["Sun","","del|🥘 Mediterranean / tapas","home|🍱 Homemade: Japanese"]]},
+  {t:"Week 4 · 🌮 Taco Tuesday week", bMon:"🍳 Arepas · overnight oats", bThu:"🍳 Scallion pancakes · chia pudding",
+   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🫓 Latin / Venezuelan|mackerel + sardines","home|🫓 Homemade: Latin"],
+         ["Tue","","out|🍛 Indian","home|🌮 Taco Tuesday (quick cook)"],
+         ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
+         ["Thu","cook + grocery","cook|🍳 Cooking: 🍱 Japanese|salmon + tuna","home|🍱 Homemade: Japanese"],
+         ["Fri","","home|🍱 Homemade: Japanese","out|🍷 Date night (kids: Japanese)"],
+         ["Sat","","amb|Out & about","del|🍣 Ametller sushi"],
+         ["Sun","","del|🍝 Italian","home|🍱 Homemade: Japanese"]]}
+];
+function cell(spec){ const [cls,txt,fish]=spec.split("|"); return '<td class="'+cls+'">'+txt+(fish?'<span class="fish">🐟 '+fish+'</span>':'')+'</td>'; }
+document.getElementById('menuTables').innerHTML = WEEKS.map(w=>{
+  let rows=w.rows.map(r=>{
+    const isMon=r[0]==="Mon", isThu=r[0]==="Thu", isSun=r[0]==="Sun";
+    const skipBf=(r[0]==="Tue"||r[0]==="Wed"||r[0]==="Fri"||r[0]==="Sat");
+    let bf="";
+    if(isMon) bf='<td class="bfast" rowspan="3">'+w.bMon+'</td>';
+    else if(isThu) bf='<td class="bfast" rowspan="3">'+w.bThu+'</td>';
+    else if(isSun) bf='<td class="home bfast">🥞 Pancakes</td>';
+    return '<tr><td class="day">'+r[0]+(r[1]?'<small>'+r[1]+'</small>':'')+'</td>'+(skipBf?'':bf)+cell(r[2])+cell(r[3])+'</tr>';
+  }).join('');
+  return '<h2>'+w.t.split(' · ')[0]+' <span class="wk">· '+w.t.split(' · ')[1]+'</span></h2>'+
+    '<div class="tscroll"><table class="menu"><tr><th class="day">Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div>';
+}).join('');
+
+renderLog(); renderBoards(); fetchRatings(); fetchGroceries();
+</script>
+</body>
+</html>
