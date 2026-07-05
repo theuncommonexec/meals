@@ -136,10 +136,8 @@
 <body>
 <header>
   <h1>🍽️ Deane Meals</h1>
-  <div class="rater">I am: <button id="rYue" class="rbtn">Yue</button><button id="rTom" class="rbtn">Tom</button></div>
 </header>
 <div id="toast" class="toast"></div>
-<div id="whoOverlay" class="ovl"><div class="ovlbox"><p>Who's rating?</p><button class="rbtn big" data-w="Yue">Yue</button><button class="rbtn big" data-w="Tom">Tom</button></div></div>
 <nav>
   <div class="tab active" data-t="log">⭐ Dish Log</div>
   <div class="tab" data-t="upcoming">🗓️ Upcoming Week Recipes</div>
@@ -283,14 +281,6 @@ const WEEK = "2026-07-06";
 let userR = {};     // dish -> [stars,...] oldest to newest (all raters combined)
 let lastRow = {};   // dish -> id of most recent rating (for undo)
 let groceries = [];
-let rater = localStorage.getItem("deaneRater") || "";
-
-function setRater(n){ rater=n; localStorage.setItem("deaneRater",n);
-  document.getElementById("rYue").classList.toggle("on",n==="Yue");
-  document.getElementById("rTom").classList.toggle("on",n==="Tom"); }
-document.getElementById("rYue").onclick=()=>setRater("Yue");
-document.getElementById("rTom").onclick=()=>setRater("Tom");
-if(rater) setRater(rater);
 
 async function fetchRatings(){
   const {data,error}=await sb.from("ratings").select("id,dish,rater,stars").order("id");
@@ -369,25 +359,14 @@ logRoot.addEventListener('click', async e=>{
     if(error){ flash('⚠️ '+error.message); return; }
     flash('Removed last rating for “'+nm+'”'); fetchRatings(); return;
   }
-  if(star&&wrap){
-    const nm=decodeURIComponent(wrap.dataset.d); const v=+star.dataset.v;
-    if(!rater){ pending={nm:nm, v:v}; document.getElementById('whoOverlay').classList.add('show'); return; }
-    logRating(nm, v);
-  }
+  if(star&&wrap){ logRating(decodeURIComponent(wrap.dataset.d), +star.dataset.v); }
 });
-let pending=null;
 async function logRating(nm, v){
   (userR[nm]=userR[nm]||[]).push(v); renderLog(); renderBoards();
-  const {error}=await sb.from('ratings').insert({dish:nm, rater:rater, stars:v});
+  const {error}=await sb.from('ratings').insert({dish:nm, rater:'family', stars:v});
   if(error){ flash('⚠️ not saved — '+error.message); fetchRatings(); return; }
-  flash(rater+' logged '+v+'★ for “'+nm+'”'); fetchRatings();
+  flash('Logged '+v+'★ for “'+nm+'”'); fetchRatings();
 }
-document.getElementById('whoOverlay').addEventListener('click', e=>{
-  const b=e.target.closest('[data-w]');
-  if(b){ setRater(b.dataset.w); document.getElementById('whoOverlay').classList.remove('show');
-    if(pending){ logRating(pending.nm, pending.v); pending=null; } }
-  else if(e.target.id==='whoOverlay'){ document.getElementById('whoOverlay').classList.remove('show'); pending=null; }
-});
 let flashT;
 function flash(m){
   const n=document.getElementById('savedNote'); n.textContent='✓ '+m;
@@ -413,7 +392,7 @@ document.getElementById('shopLists').addEventListener('change', async e=>{
   const id=+cb.dataset.id, chk=cb.checked;
   const g=groceries.find(x=>x.id===id); if(g) g.checked=chk;
   renderShop();
-  const {error}=await sb.from('grocery_items').update({checked:chk, checked_by:rater||null, updated_at:new Date().toISOString()}).eq('id',id);
+  const {error}=await sb.from('grocery_items').update({checked:chk, updated_at:new Date().toISOString()}).eq('id',id);
   if(error){ if(g) g.checked=!chk; renderShop(); }
 });
 
