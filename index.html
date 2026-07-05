@@ -268,9 +268,9 @@
 
   <h3 class="grouphd">Eat Out or Delivery</h3>
   <ul class="dishlist">
-    <li><b>Sat dinner:</b> Ametller sushi (takeout)</li>
+    <li><b>Mon lunch:</b> 🍣 Ametller sushi (takeout) — every Monday</li>
     <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> Indian</li>
-    <li><b>Tue lunch:</b> Vietnamese (out) · <b>Fri:</b> date night</li>
+    <li><b>Tue lunch:</b> Vietnamese (out) · <b>Fri:</b> date night · <b>Sat dinner:</b> 🍕 pizza night</li>
   </ul>
 </section>
 
@@ -562,7 +562,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>show
 /* ---------- MENU ---------- */
 const WEEKS = [
   {t:"Week 1 · 🍕 Pizza night week", past:true, bMon:"🍳 Savory steamed egg · chia pudding", bThu:"🍳 Spinach quiche · overnight oats",
-   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🥡 Chinese|salmon + mackerel","home|🥡 Homemade: Chinese"],
+   rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🥡 Chinese|salmon + mackerel"],
          ["Tue","","out|🥘 Mediterranean / Catalan","home|🥡 Homemade: Chinese"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
          ["Thu","cook + grocery","cook|🍳 Cooking: 🍝 Italian|salmon + sardines","home|🍝 Homemade: Italian"],
@@ -570,15 +570,15 @@ const WEEKS = [
          ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
          ["Sun","","del|🍜 Vietnamese","home|🍝 Homemade: Italian"]]},
   {t:"Week 2 · 🌮 Taco Tuesday week", cur:true, bMon:"🍳 Arepas · chia pudding", bThu:"🍳 Scallion pancakes · overnight oats",
-   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🫓 Latin / Venezuelan|salmon + mackerel","home|🫓 Homemade: Latin"],
+   rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🫓 Latin / Venezuelan|salmon + mackerel"],
          ["Tue","","out|🍜 Vietnamese","home|🌮 Taco Tuesday (quick cook)"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
          ["Thu","cook + grocery","cook|🍳 Cooking: 🥡 Chinese|mackerel + sardines","home|🥡 Homemade: Chinese"],
          ["Fri","","home|🥡 Homemade: Chinese","out|🍷 Date night (kids: Chinese)"],
-         ["Sat","","amb|Out & about","del|🍣 Ametller sushi"],
+         ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
          ["Sun","","del|🍛 Indian","home|🥡 Homemade: Chinese"]]},
   {t:"Week 3 · 🍔 Home burger week", bMon:"🍳 Tortilla de patatas · fruit", bThu:"🍳 Savory steamed egg · chia pudding",
-   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🍝 Italian|salmon + sardines","home|🍝 Homemade: Italian"],
+   rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🍝 Italian|salmon + sardines"],
          ["Tue","","out|🍲 Malaysian","home|🍝 Homemade: Italian"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
          ["Thu","cook + grocery","cook|🍳 Cooking: 🍱 Japanese|salmon + tuna","home|🍱 Homemade: Japanese"],
@@ -586,12 +586,12 @@ const WEEKS = [
          ["Sat","","amb|Out & about","home|🍔 Home burgers"],
          ["Sun","","del|🥘 Mediterranean / tapas","home|🍱 Homemade: Japanese"]]},
   {t:"Week 4 · 🌮 Taco Tuesday week", bMon:"🍳 Arepas · overnight oats", bThu:"🍳 Scallion pancakes · chia pudding",
-   rows:[["Mon","cook + grocery","cook|🍳 Cooking: 🫓 Latin / Venezuelan|mackerel + sardines","home|🫓 Homemade: Latin"],
+   rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🫓 Latin / Venezuelan|mackerel + sardines"],
          ["Tue","","out|🍛 Indian","home|🌮 Taco Tuesday (quick cook)"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
          ["Thu","cook + grocery","cook|🍳 Cooking: 🍱 Japanese|salmon + tuna","home|🍱 Homemade: Japanese"],
          ["Fri","","home|🍱 Homemade: Japanese","out|🍷 Date night (kids: Japanese)"],
-         ["Sat","","amb|Out & about","del|🍣 Ametller sushi"],
+         ["Sat","","amb|Out & about","home|🍔 Home burgers"],
          ["Sun","","del|🍝 Italian","home|🍱 Homemade: Japanese"]]}
 ];
 function cell(spec){ const [cls,txt,fish]=spec.split("|");
