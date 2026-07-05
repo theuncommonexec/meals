@@ -25,13 +25,13 @@
   *{box-sizing:border-box;}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
        color:var(--ink); background:var(--bg); margin:0; padding:0 0 50px; line-height:1.45;}
-  header{padding:16px 14px 0;}
+  header{padding:16px 24px 0;}
   h1{font-size:21px; margin:0 0 2px;}
   .sub{color:var(--muted); font-size:13px; margin:0;}
-  nav{background:var(--bg); padding:12px 14px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:6px; border-bottom:1px solid var(--line);}
+  nav{background:var(--bg); padding:12px 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:6px; border-bottom:1px solid var(--line);}
   .tab{border:1px solid var(--line); background:var(--card); border-radius:10px; padding:12px 10px; font-size:14px; font-weight:600; color:var(--muted); cursor:pointer; text-align:center;}
   .tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
-  main{padding:18px 14px;}
+  main{padding:18px 24px 28px;}
   section{display:none;} section.show{display:block;}
   h2{font-size:18px; margin:8px 0 12px; border-bottom:2px solid var(--line); padding-bottom:6px;}
   h2 .wk{font-size:13px; font-weight:400; color:var(--muted);}
@@ -124,6 +124,13 @@
   .shop li label{display:flex; align-items:flex-start; gap:10px; cursor:pointer;}
   .shop li input{width:19px; height:19px; margin-top:2px; accent-color:var(--like-bd); flex-shrink:0;}
   .shop li.done span.itx{text-decoration:line-through; color:var(--muted);}
+  .toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; padding:11px 20px; border-radius:24px; font-size:13.5px; font-weight:600; z-index:50; box-shadow:0 4px 16px rgba(0,0,0,.28); opacity:0; transition:opacity .25s; pointer-events:none; max-width:88vw; text-align:center;}
+  .toast.show{opacity:1;}
+  .ovl{display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:60; align-items:center; justify-content:center;}
+  .ovl.show{display:flex;}
+  .ovlbox{background:#fff; border-radius:16px; padding:24px 28px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,.3);}
+  .ovlbox p{margin:0 0 16px; font-weight:700; font-size:16px;}
+  .rbtn.big{font-size:17px; padding:13px 30px; margin:0 7px;}
 </style>
 </head>
 <body>
@@ -131,6 +138,8 @@
   <h1>🍽️ Deane Meals</h1>
   <div class="rater">I am: <button id="rYue" class="rbtn">Yue</button><button id="rTom" class="rbtn">Tom</button></div>
 </header>
+<div id="toast" class="toast"></div>
+<div id="whoOverlay" class="ovl"><div class="ovlbox"><p>Who's rating?</p><button class="rbtn big" data-w="Yue">Yue</button><button class="rbtn big" data-w="Tom">Tom</button></div></div>
 <nav>
   <div class="tab active" data-t="log">⭐ Dish Log</div>
   <div class="tab" data-t="upcoming">🗓️ Upcoming Week Recipes</div>
@@ -361,16 +370,30 @@ logRoot.addEventListener('click', async e=>{
     flash('Removed last rating for “'+nm+'”'); fetchRatings(); return;
   }
   if(star&&wrap){
-    if(!rater){ flash('☝️ First tap your name at the top (Yue or Tom)'); return; }
     const nm=decodeURIComponent(wrap.dataset.d); const v=+star.dataset.v;
-    (userR[nm]=userR[nm]||[]).push(v); renderLog(); renderBoards();
-    const {error}=await sb.from('ratings').insert({dish:nm, rater:rater, stars:v});
-    if(error){ flash('⚠️ not saved — '+error.message); fetchRatings(); return; }
-    flash(rater+' logged '+v+'★ for “'+nm+'”'); fetchRatings();
+    if(!rater){ pending={nm:nm, v:v}; document.getElementById('whoOverlay').classList.add('show'); return; }
+    logRating(nm, v);
   }
 });
+let pending=null;
+async function logRating(nm, v){
+  (userR[nm]=userR[nm]||[]).push(v); renderLog(); renderBoards();
+  const {error}=await sb.from('ratings').insert({dish:nm, rater:rater, stars:v});
+  if(error){ flash('⚠️ not saved — '+error.message); fetchRatings(); return; }
+  flash(rater+' logged '+v+'★ for “'+nm+'”'); fetchRatings();
+}
+document.getElementById('whoOverlay').addEventListener('click', e=>{
+  const b=e.target.closest('[data-w]');
+  if(b){ setRater(b.dataset.w); document.getElementById('whoOverlay').classList.remove('show');
+    if(pending){ logRating(pending.nm, pending.v); pending=null; } }
+  else if(e.target.id==='whoOverlay'){ document.getElementById('whoOverlay').classList.remove('show'); pending=null; }
+});
 let flashT;
-function flash(m){ const n=document.getElementById('savedNote'); n.textContent='✓ '+m; clearTimeout(flashT); flashT=setTimeout(()=>n.textContent='',2600); }
+function flash(m){
+  const n=document.getElementById('savedNote'); n.textContent='✓ '+m;
+  const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show');
+  clearTimeout(flashT); flashT=setTimeout(()=>{ n.textContent=''; t.classList.remove('show'); },2600);
+}
 
 /* ---------- SHOPPING LIST ---------- */
 function renderShop(){
