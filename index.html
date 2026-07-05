@@ -131,6 +131,13 @@
   .ovlbox{background:#fff; border-radius:16px; padding:24px 28px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,.3);}
   .ovlbox p{margin:0 0 16px; font-weight:700; font-size:16px;}
   .rbtn.big{font-size:17px; padding:13px 30px; margin:0 7px;}
+  .fbox{display:flex; gap:8px; margin:2px 0 4px;}
+  .fbox input{flex:1; min-width:0; border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; background:var(--card); color:var(--ink);}
+  .fbox input:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
+  .fbtn{border:1px solid var(--line); background:var(--card); border-radius:12px; padding:0 14px; font-size:17px; cursor:pointer;}
+  .fbtn.send{background:var(--ink); color:#fff; border-color:var(--ink); font-size:14px; font-weight:700;}
+  .fbtn.rec{background:var(--no); border-color:var(--no-bd); animation:pulse 1.2s infinite;}
+  @keyframes pulse{50%{opacity:.55;}}
 </style>
 </head>
 <body>
@@ -196,32 +203,20 @@
 </section>
 
 <section id="upcoming">
-  <h2>Week of Jul 6–12 <span class="wk">· proposed — pending Tom's feedback</span></h2>
+  <h2>Week of Jul 6–12 <span class="wk">· ask for changes below — dishes &amp; shopping list update automatically</span></h2>
+
+  <div class="fbox">
+    <input id="fbText" type="text" maxlength="600" placeholder="Ask for a change… e.g. swap the salmon for cod">
+    <button id="fbMic" class="fbtn" title="Speak">🎤</button>
+    <button id="fbSend" class="fbtn send">Send</button>
+  </div>
+  <p class="savednote" id="fbStatus"></p>
 
   <h3 class="grouphd latest">🫓 Monday batch — Latin / Venezuelan</h3>
-  <details class="dd"><summary><b>Meat 1:</b> Instant Pot kalua pork</summary><div class="ddbody">Cube pork shoulder, layer with a few slices of bacon and coarse (Hawaiian) sea salt. Pressure cook 35 min high, natural release, then shred. Cook shredded cabbage in the smoky broth if you like.<br><a href="https://nomnompaleo.com/post/111934821818/pressure-cooker-kalua-pig" target="_blank">Recipe → Nom Nom Paleo</a></div></details>
-  <details class="dd"><summary><b>Meat 2:</b> Beef picadillo — doubles for Taco Tuesday</summary><div class="ddbody">Brown ground beef, add a sofrito of onion, garlic and pepper, then tomato, cumin, and a few olives/capers. Simmer to a savory mince. Save half for Tuesday's tacos.<br><a href="https://www.laylita.com/recipes/picadillo-recipe/" target="_blank">Recipe → Laylita</a></div></details>
-  <details class="dd"><summary><b>Fish:</b> Pan-seared salmon with chimichurri</summary><div class="ddbody">Sear salmon in olive oil, skin-side down, until crisp. Top with chimichurri (parsley, oregano, garlic, red pepper, vinegar, oil) — kept savory for Tom.<br><a href="https://www.laylita.com/recipes/2013/07/27/traditional-chimichurri-sauce/" target="_blank">Chimichurri → Laylita</a></div></details>
-  <details class="dd"><summary><b>Seafood:</b> Baked gambas al ajillo (garlic shrimp)</summary><div class="ddbody">Toss shrimp with lots of sliced garlic, olive oil, a pinch of chili and parsley; bake hot until just pink. Quick and savory.<br><a href="https://www.laylita.com/recipes/gambas-al-ajillo-spanish-garlic-shrimp/" target="_blank">Recipe → Laylita</a></div></details>
-  <details class="dd"><summary><b>Veggie 1:</b> Sautéed green beans with garlic & tomato</summary><div class="ddbody">Sauté green beans with garlic, add chopped tomato, cook until tender-crisp; season with salt.</div></details>
-  <details class="dd"><summary><b>Veggie 2:</b> Tostones (savory fried green plantains)</summary><div class="ddbody">Slice green plantains, fry, smash flat, fry again until crisp; salt. Serve with a garlic dip.</div></details>
-  <details class="dd"><summary><b>Side/carb:</b> Corn fritters — torrejas de choclo</summary><div class="ddbody">Blend fresh corn with egg, a little flour and cheese; pan-fry small fritters until golden.<br><a href="https://www.laylita.com/recipes/ecuadorian-torrejas-de-choclo-corn-fritters/" target="_blank">Recipe → Laylita</a></div></details>
-  <details class="dd"><summary><b>Breakfast 1:</b> Arepas with egg & avocado</summary><div class="ddbody">Mix masarepa, water and salt; form patties, griddle then finish in the oven. Split and fill with scrambled egg and avocado.</div></details>
-  <details class="dd"><summary><b>Breakfast 2:</b> Banana-almond-cocoa bread</summary><div class="ddbody">Mash banana, whisk with eggs, almond flour, cocoa, honey and baking soda; bake ~40 min. Low-sugar family favorite, batches well.</div></details>
-  <details class="dd"><summary><b>🌮 Taco Tuesday:</b> picadillo / salmon tacos</summary><div class="ddbody">Warm quality corn tortillas; fill with beef picadillo (or flaked salmon), top with guacamole and pico de gallo. Reuses Monday's meat & fish.</div></details>
-  <details class="dd"><summary><b>Taco side:</b> Guacamole (make)</summary><div class="ddbody">Mash avocado with lime juice; mix in diced onion, jalapeño/serrano, crushed garlic, chopped cilantro and salt. Leave a few chunks.<br><a href="https://www.laylita.com/recipes/guacamole/" target="_blank">Recipe → Laylita</a></div></details>
-  <details class="dd"><summary><b>Taco side:</b> Pico de gallo (make)</summary><div class="ddbody">Finely dice tomato, onion, cilantro and jalapeño; toss with lime juice and salt. Let it sit a few minutes before serving. <i>(No dedicated recipe on your saved sites — it's a quick chop-and-mix.)</i></div></details>
-  <details class="dd"><summary><b>Taco side:</b> Tortilla chips (buy)</summary><div class="ddbody">Store-bought — grab a good-quality bag of corn tortilla chips.</div></details>
+  <div id="dishMon"><p class="empty">Loading…</p></div>
 
   <h3 class="grouphd latest" style="margin-top:36px;">🥡 Thursday batch — Chinese</h3>
-  <details class="dd"><summary><b>Meat 1:</b> Three cup chicken (san bei ji)</summary><div class="ddbody">Brown bone-in chicken pieces, then braise with roughly equal "cups" of sesame oil, soy sauce and rice wine plus ginger, garlic and a little sugar. Reduce to a glaze and finish with lots of Thai basil.<br><a href="https://redhousespice.com/three-cup-chicken/" target="_blank">Recipe → Red House Spice</a></div></details>
-  <details class="dd"><summary><b>Meat 2:</b> Instant Pot hong shao pork with daikon & carrot</summary><div class="ddbody">Blanch pork (belly or shoulder). Pressure cook 25 min high with Shaoxing wine, light + dark soy, ginger, star anise and bay; natural release. Switch to Sauté, add daikon, carrot and rock sugar, simmer ~10–12 min until tender and glossy.<br><a href="https://redhousespice.com/red-cooked-pork-belly/" target="_blank">Base recipe → Red House Spice</a></div></details>
-  <details class="dd"><summary><b>Fish:</b> Steamed fish, Chinese style (清蒸鱼)</summary><div class="ddbody">Steam a whole fish or fillets with ginger and scallion until just cooked. Top with fresh scallion and cilantro, pour over a light soy dressing, then sizzle hot oil on top. Clean and savory.<br><a href="https://redhousespice.com/chinese-steamed-fish/" target="_blank">Recipe → Red House Spice</a></div></details>
-  <details class="dd"><summary><b>Veggie 1:</b> Stir-fried gai lan (Chinese broccoli)</summary><div class="ddbody">Blanch gai lan briefly, then stir-fry with garlic and finish with oyster sauce or a splash of soy.</div></details>
-  <details class="dd"><summary><b>Veggie 2:</b> Carrot, celery, mushroom & wood-ear stir-fry (meatless)</summary><div class="ddbody">Stir-fry carrot and celery in garlic oil, add mushroom and soaked wood ear, then a sauce of light + dark soy, oyster sauce, cornstarch, pepper, a pinch of sugar and sesame oil. Toss until glossy; finish with scallion.<br><a href="https://redhousespice.com/chicken-mushroom-stir-fry/" target="_blank">Base recipe (meatless) → Red House Spice</a></div></details>
-  <details class="dd"><summary><b>Combined:</b> Soy-sauce chow mein</summary><div class="ddbody">Boil noodles, then stir-fry with your choice of protein and greens in a soy-sauce mix. The kids' favorite.<br><a href="https://redhousespice.com/chow-mein/" target="_blank">Recipe → Red House Spice</a></div></details>
-  <details class="dd"><summary><b>Breakfast 1:</b> Whole-wheat scallion pancakes</summary><div class="ddbody">Make a soft dough, coil with scallions and a little oil, roll flat and pan-fry until crisp. Batch and freeze; reheat in a pan.</div></details>
-  <details class="dd"><summary><b>Breakfast 2:</b> Banana overnight oats</summary><div class="ddbody">Combine oats, milk, mashed banana and cinnamon; chill overnight. Top with soft fruit (berries) before serving.</div></details>
+  <div id="dishThu"><p class="empty">Loading…</p></div>
 
   <h3 class="grouphd">Around the week</h3>
   <ul class="dishlist">
@@ -274,9 +269,9 @@ const STATIC_NO = ["Cold soups / gazpacho","Peanut butter sauce","Hummus-thick g
 const ALL = LATEST.concat(DISHES);
 
 /* ---------- SHARED DATABASE ---------- */
-const sb = window.supabase.createClient(
-  "https://foukqpevshhnnqhfordy.supabase.co",
-  "sb_publishable_aV1_7A_w9Ug3cUOBEeT2mQ_Qi9Zarlz");
+const SB_URL = "https://foukqpevshhnnqhfordy.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvdWtxcGV2c2hobm5xaGZvcmR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2MDYsImV4cCI6MjA5ODgxNDYwNn0.urS8lxKSkHYi6BSNDfIZsVjOesz3QaC-z6lHZp0IeNY";
+const sb = window.supabase.createClient(SB_URL, SB_ANON);
 const WEEK = "2026-07-06";
 let userR = {};     // dish -> [stars,...] oldest to newest (all raters combined)
 let lastRow = {};   // dish -> id of most recent rating (for undo)
@@ -396,10 +391,52 @@ document.getElementById('shopLists').addEventListener('change', async e=>{
   if(error){ if(g) g.checked=!chk; renderShop(); }
 });
 
+/* ---------- UPCOMING WEEK (live dishes + change requests) ---------- */
+function esc(s){ return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+async function fetchDishes(){
+  const {data,error}=await sb.from('menu_dishes').select('*').eq('week',WEEK).order('sort');
+  if(error){ document.getElementById('dishMon').innerHTML='<p class="empty">⚠️ '+esc(error.message)+'</p>'; return; }
+  const rend=b=>{
+    const rows=data.filter(d=>d.batch===b);
+    if(!rows.length) return '<p class="empty">No dishes yet.</p>';
+    return rows.map(d=>'<details class="dd" open><summary><b>'+esc(d.slot)+':</b> '+esc(d.title)+'</summary><div class="ddbody">'+esc(d.body)+(d.url?'<br><a href="'+esc(d.url)+'" target="_blank" rel="noopener">Recipe →</a>':'')+'</div></details>').join('');
+  };
+  document.getElementById('dishMon').innerHTML=rend('mon');
+  document.getElementById('dishThu').innerHTML=rend('thu');
+}
+const fbText=document.getElementById('fbText'), fbSend=document.getElementById('fbSend'), fbStatus=document.getElementById('fbStatus');
+async function sendFeedback(){
+  const m=fbText.value.trim(); if(m.length<3){ fbStatus.textContent='Type a change first — e.g. "no shrimp this week".'; return; }
+  fbSend.disabled=true; fbText.disabled=true; fbStatus.textContent='🤔 Thinking about the menu… (~10 s)';
+  try{
+    const r=await fetch(SB_URL+'/functions/v1/menu-update',{method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+SB_ANON},
+      body:JSON.stringify({message:m})});
+    const j=await r.json();
+    if(!r.ok||j.error) throw new Error(j.error||('HTTP '+r.status));
+    fbStatus.textContent='✅ '+j.reply; fbText.value='';
+    flash('Menu updated'); fetchDishes(); fetchGroceries();
+  }catch(e){ fbStatus.textContent='⚠️ '+e.message; }
+  fbSend.disabled=false; fbText.disabled=false;
+}
+fbSend.onclick=sendFeedback;
+fbText.addEventListener('keydown',e=>{ if(e.key==='Enter') sendFeedback(); });
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const micBtn=document.getElementById('fbMic');
+if(SR){
+  const rec=new SR(); rec.interimResults=false; let listening=false;
+  micBtn.onclick=()=>{ if(listening){ rec.stop(); return; } try{ rec.start(); }catch(_){} };
+  rec.onstart=()=>{ listening=true; micBtn.classList.add('rec'); };
+  rec.onend=()=>{ listening=false; micBtn.classList.remove('rec'); };
+  rec.onerror=()=>{ listening=false; micBtn.classList.remove('rec'); };
+  rec.onresult=ev=>{ fbText.value=(fbText.value+' '+ev.results[0][0].transcript).trim(); };
+} else { micBtn.style.display='none'; }
+
 /* ---------- LIVE UPDATES ---------- */
 sb.channel('live')
   .on('postgres_changes',{event:'*',schema:'public',table:'ratings'},()=>fetchRatings())
   .on('postgres_changes',{event:'*',schema:'public',table:'grocery_items'},()=>fetchGroceries())
+  .on('postgres_changes',{event:'*',schema:'public',table:'menu_dishes'},()=>fetchDishes())
   .subscribe();
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ fetchRatings(); fetchGroceries(); } });
 
@@ -460,7 +497,7 @@ document.getElementById('menuTables').innerHTML = WEEKS.map(w=>{
     '<div class="tscroll"><table class="menu"><tr><th class="day">Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div>';
 }).join('');
 
-renderLog(); renderBoards(); fetchRatings(); fetchGroceries();
+renderLog(); renderBoards(); fetchRatings(); fetchGroceries(); fetchDishes();
 </script>
 </body>
 </html>
