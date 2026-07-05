@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deane Family Meals: Batch Cooking Wizard</title>
+<title>Deane Family Meals Wizard</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -29,9 +29,9 @@
   body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
        color:var(--ink); background:var(--bg); margin:0; padding:0 0 50px; line-height:1.45;}
   header{padding:16px 24px 0;}
-  h1{font-size:21px; margin:0 0 2px;}
+  h1{font-size:clamp(16px,4.8vw,21px); margin:0 0 2px; white-space:nowrap;}
   .sub{color:var(--muted); font-size:13px; margin:0;}
-  nav{background:var(--bg); display:flex; overflow-x:auto; padding:6px 12px 0; border-bottom:1px solid var(--line); -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  nav{background:var(--bg); display:flex; overflow-x:auto; padding:6px 12px 0; border-bottom:1px solid var(--line); -webkit-overflow-scrolling:touch; scrollbar-width:none; position:sticky; top:0; z-index:20;}
   nav::-webkit-scrollbar{display:none;}
   .tab{flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 13px 9px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; text-align:center; white-space:nowrap; border-bottom:3px solid transparent;}
   .tab .ti{font-size:18px; line-height:1.2;}
@@ -172,7 +172,7 @@
 </head>
 <body>
 <header>
-  <h1>🍽️ Deane Family Meals: Batch Cooking Wizard</h1>
+  <h1>🍽️ Deane Family Meals Wizard</h1>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
@@ -523,10 +523,33 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ fetchRa
 function showTab(name){
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x.dataset.t===name));
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('show', s.id===name));
+  const tb=document.querySelector('.tab[data-t="'+name+'"]');
+  if(tb) tb.scrollIntoView({block:'nearest', inline:'nearest'});
   if(name==='menu'){ setTimeout(()=>{ const c=document.getElementById('curwk'); if(c) c.scrollIntoView({block:'start'}); },30); }
   else window.scrollTo(0,0);
 }
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.t)));
+
+/* swipe left/right to change tabs */
+(function(){
+  const order=['upcoming','shop','menu','log','likes'];
+  const mainEl=document.querySelector('main');
+  let sx=0, sy=0, live=false;
+  mainEl.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1){ live=false; return; }
+    const t=e.target.tagName;
+    live=!(t==='INPUT'||t==='TEXTAREA');
+    sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+  },{passive:true});
+  mainEl.addEventListener('touchend',e=>{
+    if(!live) return; live=false;
+    const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<70 || Math.abs(dy)>60) return;
+    const cur=order.indexOf(document.querySelector('section.show').id);
+    const nxt=cur+(dx<0?1:-1);
+    if(nxt>=0 && nxt<order.length) showTab(order[nxt]);
+  },{passive:true});
+})();
 
 /* ---------- MENU ---------- */
 const WEEKS = [
