@@ -611,7 +611,7 @@ document.getElementById('menuTables').innerHTML = WEEKS.map(w=>{
     return '<tr><td class="day">'+r[0]+'</td>'+(skipBf?'':bf)+cell(r[2])+cell(r[3])+'</tr>';
   }).join('');
   return '<div class="wkblock'+(w.past?' pastwk':'')+'"'+(w.cur?' id="curwk"':'')+'>'+
-    '<h2>'+(w.cur?'⭐ ':'')+w.t.split(' · ')[0]+' <span class="wk">· '+w.t.split(' · ')[1]+'</span>'+
+    '<h2 class="pagehd">'+(w.cur?'⭐ ':'')+w.t.split(' · ')[0]+' Overview <span class="wk">· '+w.t.split(' · ')[1]+'</span>'+
     (w.cur?'<a href="#" class="wklink" onclick="showTab(\'upcoming\');return false;">View recipes →</a>':'')+'</h2>'+
     '<div class="tscroll"><table class="menu"><tr><th class="day"></th><th class="bf">Breakfast</th><th>Lunch</th><th>Dinner</th></tr>'+rows+'</table></div></div>';
 }).join('');
