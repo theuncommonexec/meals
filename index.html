@@ -327,7 +327,7 @@ function statusLine(d){
   let bits=[];
   if(c.fives) bits.push(c.fives+"/3 five-star → love");
   if(c.twos) bits.push(c.twos+"/3 two-star → avoid");
-  if(!bits.length) return '<span class="st-prog">no ratings yet</span>';
+  if(!bits.length) return c.n ? '<span class="st-prog">'+c.n+' rating'+(c.n>1?'s':'')+' logged</span>' : '<span class="st-prog">no ratings yet</span>';
   return '<span class="st-prog">'+bits.join(" · ")+'</span>';
 }
 function starPicker(d){
