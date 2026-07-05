@@ -140,8 +140,10 @@
   .rbtn.big{font-size:17px; padding:13px 30px; margin:0 7px;}
   .fbox{display:flex; gap:8px; margin:2px 0 4px;}
   .fbox.fcol{flex-direction:column; align-items:stretch;}
-  .fbox input{flex:1; min-width:0; border:1px solid var(--line); border-radius:12px; padding:11px 14px; font-size:15px; background:var(--card); color:var(--ink);}
-  .fbox input:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
+  .addrow{display:flex; align-items:center; gap:14px; padding:6px 2px; border-bottom:1px solid var(--line);}
+  .addrow .plus{font-size:22px; color:var(--muted); line-height:1; font-weight:400;}
+  .addrow input{flex:1; min-width:0; border:none; outline:none; font-size:15px; background:transparent; color:var(--ink); padding:10px 0; font-family:inherit;}
+  .addrow input::placeholder{color:var(--muted);}
   .fbox textarea{border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; background:var(--card); color:var(--ink); font-family:inherit; resize:vertical; min-height:74px;}
   .fbox textarea:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
   .fbrow{display:flex; gap:8px; justify-content:flex-end;}
@@ -265,14 +267,13 @@
 
 <section id="shop">
   <h2>🛒 Grocery List: Mon July 6th, 2026</h2>
-
-  <div class="fbox">
-    <input id="giText" type="text" maxlength="120" placeholder="Add an item… e.g. dish soap, extra limes">
-    <button id="giAdd" class="fbtn send">Add</button>
-  </div>
-
-  <p class="savednote" id="shopNote"></p>
   <div id="shopLists"><p class="empty">Loading…</p></div>
+
+  <div class="shopcat" style="margin-top:34px;">Anything else?</div>
+  <div class="addrow">
+    <span class="plus">+</span>
+    <input id="giText" type="text" maxlength="120" placeholder="List item">
+  </div>
 </section>
 </main>
 
@@ -423,15 +424,13 @@ function flash(m){
 /* ---------- SHOPPING LIST ---------- */
 function renderShop(){
   const box=document.getElementById('shopLists');
-  if(!groceries.length){ box.innerHTML='<p class="empty">No list for this week yet.</p>'; document.getElementById('shopNote').textContent=''; return; }
+  if(!groceries.length){ box.innerHTML='<p class="empty">No list for this week yet.</p>'; return; }
   const cats=[]; groceries.forEach(g=>{ if(!cats.includes(g.category)) cats.push(g.category); });
   box.innerHTML=cats.map(c=>'<div class="shopcat">'+c+'</div><ul class="shop">'+
     groceries.filter(g=>g.category===c).map(g=>{
       const p=g.item.split('||');
       return '<li class="'+(g.checked?'done':'')+'"><label><input type="checkbox" data-id="'+g.id+'"'+(g.checked?' checked':'')+'><span class="itx">'+p[0]+(p[1]?'<span class="tr">'+p[1]+'</span>':'')+'</span></label></li>';
     }).join('')+'</ul>').join('');
-  const done=groceries.filter(g=>g.checked).length;
-  document.getElementById('shopNote').textContent = done ? '✓ '+done+' of '+groceries.length+' in the basket' : '';
 }
 document.getElementById('shopLists').addEventListener('change', async e=>{
   const cb=e.target.closest('input[type=checkbox]'); if(!cb) return;
@@ -493,17 +492,19 @@ if(SR){
 } else { micBtn.style.display='none'; }
 
 /* ---------- ADD GROCERY ITEM ---------- */
-const giText=document.getElementById('giText'), giAdd=document.getElementById('giAdd');
-async function addGrocery(){
-  const t=giText.value.trim(); if(!t) return;
-  giAdd.disabled=true;
+const giText=document.getElementById('giText');
+let giBusy=false;
+async function addGrocery(refocus){
+  const t=giText.value.trim(); if(!t||giBusy) return;
+  giBusy=true;
   const {error}=await sb.from('grocery_items').insert({week:WEEK, item:t, category:'Other items'});
-  giAdd.disabled=false;
+  giBusy=false;
   if(error){ flash('⚠️ '+error.message); return; }
   giText.value=''; flash('Added “'+t+'”'); fetchGroceries();
+  if(refocus) giText.focus();
 }
-giAdd.onclick=addGrocery;
-giText.addEventListener('keydown',e=>{ if(e.key==='Enter') addGrocery(); });
+giText.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addGrocery(true); } });
+giText.addEventListener('blur',()=>addGrocery(false));
 
 /* ---------- LIVE UPDATES ---------- */
 sb.channel('live')
