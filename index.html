@@ -144,6 +144,7 @@
   .addrow .plus{font-size:22px; color:var(--muted); line-height:1; font-weight:400;}
   .addrow input{flex:1; min-width:0; border:none; outline:none; font-size:15px; background:transparent; color:var(--ink); padding:10px 0; font-family:inherit;}
   .addrow input::placeholder{color:var(--muted);}
+  .addbtn{border:none; background:var(--acc); color:#fff; border-radius:999px; padding:8px 20px; font-size:13.5px; font-weight:600; cursor:pointer; font-family:inherit; flex-shrink:0;}
   .fbox textarea{border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; background:var(--card); color:var(--ink); font-family:inherit; resize:vertical; min-height:74px;}
   .fbox textarea:focus{outline:2px solid var(--home-bd); border-color:var(--home-bd);}
   .fbrow{display:flex; gap:8px; justify-content:flex-end;}
@@ -273,6 +274,7 @@
   <div class="addrow">
     <span class="plus">+</span>
     <input id="giText" type="text" maxlength="120" placeholder="List item">
+    <button id="giAdd" class="addbtn">Add</button>
   </div>
 </section>
 </main>
@@ -505,6 +507,9 @@ async function addGrocery(refocus){
 }
 giText.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addGrocery(true); } });
 giText.addEventListener('blur',()=>addGrocery(false));
+const giAdd=document.getElementById('giAdd');
+giAdd.addEventListener('pointerdown',e=>e.preventDefault());  // keep input focused
+giAdd.addEventListener('click',()=>addGrocery(true));
 
 /* ---------- LIVE UPDATES ---------- */
 sb.channel('live')
