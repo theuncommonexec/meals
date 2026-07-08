@@ -183,7 +183,7 @@
 <body>
 <header>
   <h1>🍽️ Deane Family Meals Wizard</h1>
-  <p class="sub gdate">Week of July 6th</p>
+  <p class="sub gdate">Week of July 13th</p>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
@@ -281,10 +281,16 @@
   <p class="rules-line"><b>Tap the stars to rate.</b> 5★ = Love it! Make more often · 1★ = Not a fan, pass for next time.</p>
   <p class="savednote" id="savedNote"></p>
 
-  <h3 class="grouphd latest">Batch Date: Thu Jul 2 — Latest</h3>
+  <h3 class="grouphd latest">Batch Date: Mon Jul 6 — Latest</h3>
   <table class="log">
     <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
     <tbody id="logLatest"></tbody>
+  </table>
+
+  <h3 class="grouphd latest">Batch Date: Thu Jul 2</h3>
+  <table class="log">
+    <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
+    <tbody id="logJul02"></tbody>
   </table>
 
   <h3 class="grouphd latest">Batch Date: Mon Jun 29</h3>
@@ -323,10 +329,10 @@
   </div>
   <p class="savednote" id="fbStatus"></p>
 
-  <h3 class="grouphd latest">🫓 Monday batch — Latin / Venezuelan</h3>
+  <h3 class="grouphd latest">🥡 Monday batch — Chinese</h3>
   <div id="dishMon"><p class="empty">Loading…</p></div>
 
-  <h3 class="grouphd latest" style="margin-top:36px;">🥡 Thursday batch — Chinese</h3>
+  <h3 class="grouphd latest" style="margin-top:36px;">🍝 Thursday batch — Italian</h3>
   <div id="dishThu"><p class="empty">Loading…</p></div>
 
   <h3 class="grouphd">Eat Out or Delivery</h3>
@@ -353,6 +359,16 @@
 <script>
 /* ---------- DATA ---------- */
 const LATEST = [
+  {n:"Instant Pot kalua pork", c:"Latin"},
+  {n:"Beef picadillo", c:"Latin"},
+  {n:"Pan-seared salmon with chimichurri", c:"Latin"},
+  {n:"Baked gambas al ajillo", c:"Latin"},
+  {n:"Sautéed green beans with garlic & tomato", c:"Latin"},
+  {n:"Tostones (fried green plantains)", c:"Latin"},
+  {n:"Corn fritters — torrejas de choclo", c:"Latin"},
+  {n:"Arepas with egg & avocado", c:"Breakfast"},
+];
+const BATCH0702 = [
   {n:"Textured soy & egg in tomato sauce", c:"Italian"},
   {n:"Baked orata with lemon, capers & oregano", c:"Italian"},
   {n:"Roasted broccoli, garlic & lemon", c:"Italian"},
@@ -384,13 +400,13 @@ const DISHES = [
   {n:"Banana bread, almonds & cocoa", c:"Breakfast", loved:true},
 ];
 const STATIC_NO = ["Cold soups / gazpacho","Peanut butter sauce","Hummus-thick gloppy sauces","Vegan / substitute eggs","Oats with apple","Papaya","Beets (Tom)","Oranges / citrus (Yue)","Too much mint","Strong spirulina"];
-const ALL = LATEST.concat(BATCH0629, DISHES);
+const ALL = LATEST.concat(BATCH0702, BATCH0629, DISHES);
 
 /* ---------- SHARED DATABASE ---------- */
 const SB_URL = "https://foukqpevshhnnqhfordy.supabase.co";
 const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvdWtxcGV2c2hobm5xaGZvcmR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2MDYsImV4cCI6MjA5ODgxNDYwNn0.urS8lxKSkHYi6BSNDfIZsVjOesz3QaC-z6lHZp0IeNY";
 const sb = window.supabase.createClient(SB_URL, SB_ANON);
-const WEEK = "2026-07-06";
+const WEEK = "2026-07-13";
 let userR = {};     // dish -> [stars,...] oldest to newest (all raters combined)
 let lastRow = {};   // dish -> id of most recent rating (for undo)
 let groceries = [];
@@ -448,6 +464,7 @@ function rowHtml(d){
 }
 function renderLog(){
   document.getElementById('logLatest').innerHTML = LATEST.map(rowHtml).join('');
+  document.getElementById('logJul02').innerHTML = BATCH0702.map(rowHtml).join('');
   document.getElementById('logJun29').innerHTML = BATCH0629.map(rowHtml).join('');
   document.getElementById('logPrior').innerHTML = DISHES.map(rowHtml).join('');
 }
@@ -632,7 +649,7 @@ const WEEKS = [
          ["Fri","","home|🍝 Homemade: Italian","out|🍷 Date night (kids: Italian)"],
          ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
          ["Sun","","del|🍜 Vietnamese","home|🍝 Homemade: Italian"]]},
-  {t:"Week 2 · 🌮 Taco Tuesday week", cur:true, bMon:"🍳 Arepas · chia pudding", bThu:"🍳 Scallion pancakes · overnight oats",
+  {t:"Week 2 · 🌮 Taco Tuesday week", past:true, bMon:"🍳 Arepas · chia pudding", bThu:"🍳 Scallion pancakes · overnight oats",
    rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🫓 Latin / Venezuelan|salmon + mackerel"],
          ["Tue","","out|🍜 Vietnamese","home|🌮 Taco Tuesday (quick cook)"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
@@ -640,14 +657,14 @@ const WEEKS = [
          ["Fri","","home|🥡 Homemade: Chinese","out|🍷 Date night (kids: Chinese)"],
          ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
          ["Sun","","del|🍛 Indian","home|🥡 Homemade: Chinese"]]},
-  {t:"Week 3 · 🍔 Home burger week", bMon:"🍳 Tortilla de patatas · fruit", bThu:"🍳 Savory steamed egg · chia pudding",
-   rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🍝 Italian|salmon + sardines"],
-         ["Tue","","out|🍲 Malaysian","home|🍝 Homemade: Italian"],
+  {t:"Week 3 · 🍕 Pizza night week", cur:true, bMon:"🍳 Scallion pancakes · banana overnight oats", bThu:"🍳 Spinach frittata · chia pudding",
+   rows:[["Mon","cook + grocery","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🥡 Chinese|steamed whole fish"],
+         ["Tue","","out|🍜 Vietnamese","home|🥡 Homemade: Chinese"],
          ["Wed","","del|🥗 Honest Greens (lunch+dinner)","del|🥗 Honest Greens"],
-         ["Thu","cook + grocery","cook|🍳 Cooking: 🍱 Japanese|salmon + tuna","home|🍱 Homemade: Japanese"],
-         ["Fri","","home|🍱 Homemade: Japanese","out|🍷 Date night (kids: Japanese)"],
-         ["Sat","","amb|Out & about","home|🍔 Home burgers"],
-         ["Sun","","del|🥘 Mediterranean / tapas","home|🍱 Homemade: Japanese"]]},
+         ["Thu","cook + grocery","cook|🍳 Cooking: 🍝 Italian|salmon","home|🍝 Homemade: Italian"],
+         ["Fri","","home|🍝 Homemade: Italian","out|🍷 Date night (kids: Italian)"],
+         ["Sat","","amb|Out & about","home|🍕 Family pizza night"],
+         ["Sun","","del|🍛 Indian","home|🥡 Homemade leftovers"]]},
   {t:"Week 4 · 🌮 Taco Tuesday week", bMon:"🍳 Arepas · overnight oats", bThu:"🍳 Scallion pancakes · chia pudding",
    rows:[["Mon","","del|🍣 Ametller sushi (takeout)","cook|🍳 Cooking: 🫓 Latin / Venezuelan|mackerel + sardines"],
          ["Tue","","out|🍛 Indian","home|🌮 Taco Tuesday (quick cook)"],
