@@ -79,6 +79,7 @@
   .panel.no{border-top:4px solid var(--no-bd);}
   .panel h3{margin:0 0 12px; font-size:15px;}
   .tag{display:inline-flex; align-items:center; gap:8px; background:#fff; border-radius:999px; padding:8px 15px; margin:0 7px 9px 0; font-size:13px; font-weight:600;}
+  a.tag{text-decoration:none; cursor:pointer;}
   .tag .tik{font-size:12px; opacity:.85;}
   .tag.like{color:var(--like-tx); border:1.5px solid var(--like-bd);}
   .tag.no{color:var(--no-tx); border:1.5px solid var(--no-bd);}
@@ -390,14 +391,14 @@ const BATCH0629 = [
 ];
 const DISHES = [
   {n:"Baked purple yam", c:"Side", loved:true},
-  {n:"Pasta alla puttanesca", c:"Italian", loved:true},
+  {n:"Pasta alla puttanesca", c:"Italian", loved:true, u:"https://coleycooks.com/puttanesca/"},
   {n:"Spaghetti, thin liquid tomato sauce", c:"Italian", loved:true},
   {n:"Pasta with tuna & basil pesto", c:"Italian", loved:true},
-  {n:"Ramen with tofu/pork", c:"Chinese/JP", loved:true},
-  {n:"Miso soup with noodles + tofu", c:"Japanese", loved:true},
-  {n:"Korean bibimbap", c:"Korean", loved:true},
+  {n:"Ramen with tofu/pork", c:"Chinese/JP", loved:true, u:"https://www.justonecookbook.com/homemade-chashu-miso-ramen/"},
+  {n:"Miso soup with noodles + tofu", c:"Japanese", loved:true, u:"https://www.justonecookbook.com/homemade-miso-soup/"},
+  {n:"Korean bibimbap", c:"Korean", loved:true, u:"https://www.koreanbapsang.com/bibimbap/"},
   {n:"Arroz a la cubana", c:"Latin", loved:true},
-  {n:"Fish tacos, avocado & pico", c:"Mexican", loved:true},
+  {n:"Fish tacos, avocado & pico", c:"Mexican", loved:true, u:"https://www.laylita.com/recipes/baja-fish-tacos/"},
   {n:"Pumpkin-ginger cream (hot)", c:"Soup", loved:true},
   {n:"Banana bread, almonds & cocoa", c:"Breakfast", loved:true},
 ];
@@ -476,7 +477,7 @@ function renderBoards(){
   const grpHtml=(list,cls,icon)=>ORDER.map(g=>{
     const items=list.filter(d=>groupOf(d)===g);
     if(!items.length) return '';
-    return '<div class="tgrp">'+g+'</div><div>'+items.map(d=>'<span class="tag '+cls+'">'+d.n+'<span class="tik">'+icon+'</span></span>').join('')+'</div>';
+    return '<div class="tgrp">'+g+'</div><div>'+items.map(d=> d.u && cls==='like' ? '<a class="tag '+cls+'" href="'+d.u+'" target="_blank" rel="noopener">'+d.n+'<span class="tik">\u2197</span></a>' : '<span class="tag '+cls+'">'+d.n+'<span class="tik">'+icon+'</span></span>').join('')+'</div>';
   }).join('');
   const love=ALL.filter(isLoved), avoid=ALL.filter(isAvoid);
   document.getElementById('loveTags').innerHTML =
