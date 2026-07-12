@@ -556,7 +556,7 @@ async function sendFeedback(){
     if(!r.ok||j.error) throw new Error(j.error||('HTTP '+r.status));
     fbStatus.textContent='✅ '+j.reply; fbText.value='';
     flash('Menu updated'); fetchDishes(); fetchGroceries();
-  }catch(e){ fbStatus.textContent='⚠️ '+e.message; }
+  }catch(e){ fbStatus.textContent='⚠️ Update failed. Please try again.'; }
   fbSend.disabled=false; fbText.disabled=false;
 }
 fbSend.onclick=sendFeedback;
