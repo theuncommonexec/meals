@@ -186,7 +186,7 @@
 <body>
 <header>
   <h1>🍽️ Deane Family Meals Wizard</h1>
-  <p class="sub gdate">Week of July 13th</p>
+  <p class="sub gdate">Week of July 20th</p>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
@@ -338,17 +338,17 @@
   </div>
   <p class="savednote" id="fbStatus"></p>
 
-  <h3 class="grouphd latest">🥡 Monday batch — Chinese</h3>
+  <h3 class="grouphd latest">🥘 Monday batch — Korean</h3>
   <div id="dishMon"><p class="empty">Loading…</p></div>
 
-  <h3 class="grouphd latest" style="margin-top:36px;">🍝 Thursday batch — Italian</h3>
+  <h3 class="grouphd latest" style="margin-top:36px;">🫓 Thursday batch — Latin</h3>
   <div id="dishThu"><p class="empty">Loading…</p></div>
 
   <h3 class="grouphd">Eat Out or Delivery</h3>
   <ul class="dishlist">
     <li><b>Mon lunch:</b> 🍣 Ametller sushi (takeout) — every Monday</li>
-    <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> Indian</li>
-    <li><b>Tue lunch:</b> Vietnamese (out) · <b>Fri:</b> date night · <b>Sat dinner:</b> 🍕 pizza night</li>
+    <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> order-in, not Latin/Asian (Middle Eastern? Or pizza = July's pizza fix)</li>
+    <li><b>Tue lunch:</b> Indian / Vietnamese / Malaysian (out) · <b>Fri:</b> date night · no taco/pizza/burger home slot this week</li>
   </ul>
 </section>
 
@@ -435,7 +435,7 @@ const ALL = LATEST.concat(BATCH0706, BATCH0702, BATCH0629, DISHES);
 const SB_URL = "https://foukqpevshhnnqhfordy.supabase.co";
 const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvdWtxcGV2c2hobm5xaGZvcmR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2MDYsImV4cCI6MjA5ODgxNDYwNn0.urS8lxKSkHYi6BSNDfIZsVjOesz3QaC-z6lHZp0IeNY";
 const sb = window.supabase.createClient(SB_URL, SB_ANON);
-const WEEK = "2026-07-13";
+const WEEK = "2026-07-20";
 let userR = {};     // dish -> [stars,...] oldest to newest (all raters combined)
 let lastRow = {};   // dish -> id of most recent rating (for undo)
 let groceries = [];
