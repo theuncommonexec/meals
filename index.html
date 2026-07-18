@@ -284,10 +284,16 @@
   <p class="rules-line"><b>Tap the stars to rate.</b> 5★ = Love it! Make more often · 1★ = Not a fan, pass for next time.</p>
   <p class="savednote" id="savedNote"></p>
 
-  <h3 class="grouphd latest">Batch Date: Mon Jul 6 — Latest</h3>
+  <h3 class="grouphd latest">Batch Date: Week of Jul 13 (Mon Chinese &middot; Thu Italian) — Latest</h3>
   <table class="log">
     <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
     <tbody id="logLatest"></tbody>
+  </table>
+
+  <h3 class="grouphd latest">Batch Date: Mon Jul 6</h3>
+  <table class="log">
+    <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
+    <tbody id="logJul06"></tbody>
   </table>
 
   <h3 class="grouphd latest">Batch Date: Thu Jul 2</h3>
@@ -362,6 +368,26 @@
 <script>
 /* ---------- DATA ---------- */
 const LATEST = [
+  {n:"Three cup chicken (san bei ji)", c:"Chinese"},
+  {n:"Instant Pot Japanese curry with beef", c:"Japanese"},
+  {n:"Vegan Japanese curry with tofu", c:"Japanese"},
+  {n:"Ginger-scallion salmon, Chinese style", c:"Chinese"},
+  {n:"Stir-fried gai lan with garlic", c:"Chinese"},
+  {n:"Carrot, celery, mushroom & wood-ear stir-fry (meatless)", c:"Chinese"},
+  {n:"Soy-sauce chow mein", c:"Chinese"},
+  {n:"Whole-wheat scallion pancakes", c:"Breakfast"},
+  {n:"Banana overnight oats", c:"Breakfast"},
+  {n:"Roman chicken cacciatore", c:"Italian"},
+  {n:"Italian meatballs in thin tomato sauce", c:"Italian"},
+  {n:"Sicilian tuna pizza", c:"Italian"},
+  {n:"Pasta alla puttanesca (Sicilian style)", c:"Italian"},
+  {n:"Summer minestrone", c:"Italian"},
+  {n:"Baked crispy kale", c:"Italian"},
+  {n:"Arugula, cherry tomato & shaved parmigiano salad", c:"Italian"},
+  {n:"Spinach & mushroom frittata", c:"Breakfast"},
+  {n:"Chia pudding with berries & mango", c:"Breakfast"},
+];
+const BATCH0706 = [
   {n:"Instant Pot kalua pork", c:"Latin"},
   {n:"Beef picadillo", c:"Latin"},
   {n:"Pan-seared salmon with chimichurri", c:"Latin"},
@@ -403,7 +429,7 @@ const DISHES = [
   {n:"Banana bread, almonds & cocoa", c:"Breakfast", loved:true},
 ];
 const STATIC_NO = ["Cold soups / gazpacho","Peanut butter sauce","Hummus-thick gloppy sauces","Vegan / substitute eggs","Oats with apple","Papaya","Beets (Tom)","Oranges / citrus (Yue)","Too much mint","Strong spirulina"];
-const ALL = LATEST.concat(BATCH0702, BATCH0629, DISHES);
+const ALL = LATEST.concat(BATCH0706, BATCH0702, BATCH0629, DISHES);
 
 /* ---------- SHARED DATABASE ---------- */
 const SB_URL = "https://foukqpevshhnnqhfordy.supabase.co";
@@ -467,6 +493,7 @@ function rowHtml(d){
 }
 function renderLog(){
   document.getElementById('logLatest').innerHTML = LATEST.map(rowHtml).join('');
+  document.getElementById('logJul06').innerHTML = BATCH0706.map(rowHtml).join('');
   document.getElementById('logJul02').innerHTML = BATCH0702.map(rowHtml).join('');
   document.getElementById('logJun29').innerHTML = BATCH0629.map(rowHtml).join('');
   document.getElementById('logPrior').innerHTML = DISHES.map(rowHtml).join('');
