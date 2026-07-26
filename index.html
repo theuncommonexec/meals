@@ -186,7 +186,7 @@
 <body>
 <header>
   <h1>🍽️ Deane Family Meals Wizard</h1>
-  <p class="sub gdate">Week of July 20th</p>
+  <p class="sub gdate">Week of July 27th</p>
 </header>
 <div id="toast" class="toast"></div>
 <nav>
@@ -284,10 +284,16 @@
   <p class="rules-line"><b>Tap the stars to rate.</b> 5★ = Love it! Make more often · 1★ = Not a fan, pass for next time.</p>
   <p class="savednote" id="savedNote"></p>
 
-  <h3 class="grouphd latest">Batch Date: Week of Jul 13 (Mon Chinese &middot; Thu Italian) — Latest</h3>
+  <h3 class="grouphd latest">Batch Date: Week of Jul 20 (Mon Korean &middot; Thu Latin) — Latest</h3>
   <table class="log">
     <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
     <tbody id="logLatest"></tbody>
+  </table>
+
+  <h3 class="grouphd latest">Batch Date: Week of Jul 13 (Mon Chinese &middot; Thu Italian)</h3>
+  <table class="log">
+    <tr><th style="width:58%">Dish</th><th>Rating</th></tr>
+    <tbody id="logJul13"></tbody>
   </table>
 
   <h3 class="grouphd latest">Batch Date: Mon Jul 6</h3>
@@ -338,17 +344,17 @@
   </div>
   <p class="savednote" id="fbStatus"></p>
 
-  <h3 class="grouphd latest">🥘 Monday batch — Korean</h3>
+  <h3 class="grouphd latest">🍱 Monday batch — Japanese</h3>
   <div id="dishMon"><p class="empty">Loading…</p></div>
 
-  <h3 class="grouphd latest" style="margin-top:36px;">🫓 Thursday batch — Latin</h3>
+  <h3 class="grouphd latest" style="margin-top:36px;">🍝 Thursday batch — Italian</h3>
   <div id="dishThu"><p class="empty">Loading…</p></div>
 
   <h3 class="grouphd">Eat Out or Delivery</h3>
   <ul class="dishlist">
     <li><b>Mon lunch:</b> 🍣 Ametller sushi (takeout) — every Monday</li>
-    <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> order-in, not Latin/Asian (Middle Eastern? Or pizza = July's pizza fix)</li>
-    <li><b>Tue lunch:</b> Indian / Vietnamese / Malaysian (out) · <b>Fri:</b> date night · no taco/pizza/burger home slot this week</li>
+    <li><b>Wed lunch + dinner:</b> Honest Greens · <b>Sun lunch:</b> order-in — Malaysian (≠ Thursday's Italian)</li>
+    <li><b>Tue lunch:</b> parents sit-down out — Indian · <b>Fri:</b> date night · <b>Sat:</b> 🍔 home burgers (beef for Mom &amp; kids, salmon for Tom)</li>
   </ul>
 </section>
 
@@ -368,6 +374,28 @@
 <script>
 /* ---------- DATA ---------- */
 const LATEST = [
+  {n:"Chicken bulgogi (dak bulgogi)", c:"Korean"},
+  {n:"LA galbi \u2014 grilled short ribs", c:"Korean"},
+  {n:"Salmon bulgogi", c:"Korean"},
+  {n:"Instant Pot kimchi jjigae with tofu", c:"Korean"},
+  {n:"Sigeumchi namul (spinach)", c:"Korean"},
+  {n:"Kongnamul muchim (soybean sprouts)", c:"Korean"},
+  {n:"Japchae (veggie)", c:"Korean"},
+  {n:"Gyeran mari \u2014 rolled omelette", c:"Breakfast"},
+  {n:"Mango & blueberry chia pudding (+ oats)", c:"Breakfast"},
+  {n:"Fritada de gallina", c:"Latin"},
+  {n:"Tofu fritada", c:"Latin"},
+  {n:"Lomo saltado", c:"Latin"},
+  {n:"White fish with chimichurri", c:"Latin"},
+  {n:"Patacones", c:"Latin"},
+  {n:"Arepas (plain)", c:"Latin"},
+  {n:"Garlic broccoli", c:"Latin"},
+  {n:"Avocado & tomato salad", c:"Latin"},
+  {n:"Arroz a la cubana (egg only)", c:"Latin"},
+  {n:"Perico \u2014 Venezuelan scrambled eggs", c:"Breakfast"},
+  {n:"Arepas with egg & avocado", c:"Breakfast"},
+];
+const BATCH0713 = [
   {n:"Three cup chicken (san bei ji)", c:"Chinese"},
   {n:"Instant Pot Japanese curry with beef", c:"Japanese"},
   {n:"Vegan Japanese curry with tofu", c:"Japanese"},
@@ -429,13 +457,13 @@ const DISHES = [
   {n:"Banana bread, almonds & cocoa", c:"Breakfast", loved:true},
 ];
 const STATIC_NO = ["Cold soups / gazpacho","Peanut butter sauce","Hummus-thick gloppy sauces","Vegan / substitute eggs","Oats with apple","Papaya","Beets (Tom)","Oranges / citrus (Yue)","Too much mint","Strong spirulina"];
-const ALL = LATEST.concat(BATCH0706, BATCH0702, BATCH0629, DISHES);
+const ALL = LATEST.concat(BATCH0713, BATCH0706, BATCH0702, BATCH0629, DISHES);
 
 /* ---------- SHARED DATABASE ---------- */
 const SB_URL = "https://foukqpevshhnnqhfordy.supabase.co";
 const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZvdWtxcGV2c2hobm5xaGZvcmR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyMzg2MDYsImV4cCI6MjA5ODgxNDYwNn0.urS8lxKSkHYi6BSNDfIZsVjOesz3QaC-z6lHZp0IeNY";
 const sb = window.supabase.createClient(SB_URL, SB_ANON);
-const WEEK = "2026-07-20";
+const WEEK = "2026-07-27";
 let userR = {};     // dish -> [stars,...] oldest to newest (all raters combined)
 let lastRow = {};   // dish -> id of most recent rating (for undo)
 let groceries = [];
@@ -493,6 +521,7 @@ function rowHtml(d){
 }
 function renderLog(){
   document.getElementById('logLatest').innerHTML = LATEST.map(rowHtml).join('');
+  document.getElementById('logJul13').innerHTML = BATCH0713.map(rowHtml).join('');
   document.getElementById('logJul06').innerHTML = BATCH0706.map(rowHtml).join('');
   document.getElementById('logJul02').innerHTML = BATCH0702.map(rowHtml).join('');
   document.getElementById('logJun29').innerHTML = BATCH0629.map(rowHtml).join('');
